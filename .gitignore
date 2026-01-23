@@ -1,0 +1,16 @@
+# Godot 4+ specific ignores
+*.uid
+.godot/
+
+# Python specific ignores
+.venv/
+
+# Binaries
+*.obj
+*.dblite
+*.lib
+*.exp
+*.dll
+
+# Visual Studio
+.vs
