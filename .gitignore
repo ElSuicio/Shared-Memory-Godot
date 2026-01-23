@@ -1,5 +1,6 @@
 # Godot 4+ specific ignores
 *.uid
+*.gen.*
 .godot/
 
 # Python specific ignores
