@@ -2,7 +2,7 @@ import os
 import sys
 
 lib_name = "shared_memory"
-project_dir = "test"
+project_dir = "test-shared-memory"
 
 env = SConscript("godot-cpp/SConstruct")
 env.Append(CPPPATH=["src/"])
