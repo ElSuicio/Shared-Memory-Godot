@@ -7,7 +7,24 @@ project_dir = "test-shared-memory"
 env = SConscript("godot-cpp/SConstruct")
 env.Append(CPPPATH=["src/"])
 
-sources = Glob("src/*.cpp")
+common_sources = Glob("src/*.cpp")
+platform_sources = []
+
+if env["platform"] == "windows":
+    platform_sources += Glob("src/*_windows.cpp")
+
+sources = []
+
+for source in common_sources:
+    filename = str(source)
+
+    if filename.endswith("_windows.cpp"):
+        continue
+        
+    sources.append(source)
+
+
+sources += platform_sources
 
 if env["target"] in ["editor", "template_debug"]:
     try:
