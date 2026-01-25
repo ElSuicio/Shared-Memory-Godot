@@ -16,10 +16,24 @@ namespace godot {
 			STATUS_ERROR = 4
 		};
 
-		StringName name;
-		int64_t size = 0;
+		enum Scope {
+			SCOPE_LOCAL = 0,
+			SCOPE_GLOBAL = 1,
+			SCOPE_MAX = 2
+		};
 
-		int8_t status = STATUS_UNINITIALIZED;
+		StringName name;
+		uint64_t size = 0;
+		uint8_t status = STATUS_UNINITIALIZED;
+
+		void* os_handle = nullptr;
+		void* os_ptr = nullptr;
+
+		Error _fail(Error p_error, const String& p_message);
+
+		Error _create_os(const StringName& p_name, const uint64_t p_size, const uint64_t p_scope);
+		Error _open_os(const StringName& p_name, const uint64_t p_size);
+		void _close_os();
 
 	protected:
 		static void _bind_methods();
@@ -29,12 +43,11 @@ namespace godot {
 		~SharedMemory();
 
 		StringName get_name() const;
-		int64_t get_size() const;
-		int8_t get_status() const;
+		uint64_t get_size() const;
+		uint8_t get_status() const;
 
-		Error create(const StringName& p_name, const int64_t p_size);
+		Error create(const StringName& p_name, const int64_t p_size, const int64_t p_scope);
 		Error open(const StringName& p_name, const int64_t p_size);
-
 		void close();
 
 	};
