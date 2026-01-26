@@ -18,8 +18,7 @@ namespace godot {
 
 		enum Scope {
 			SCOPE_LOCAL = 0,
-			SCOPE_GLOBAL = 1,
-			SCOPE_MAX = 2
+			SCOPE_GLOBAL = 1
 		};
 
 		StringName name;
@@ -31,8 +30,10 @@ namespace godot {
 
 		Error _fail(Error p_error, const String& p_message);
 
-		Error _create_os(const StringName& p_name, const uint64_t p_size, const uint64_t p_scope);
-		Error _open_os(const StringName& p_name, const uint64_t p_size);
+		uint64_t _get_mapped_size_os() const;
+
+		Error _create_os(const StringName& p_name, const int64_t p_size, const int64_t p_scope);
+		Error _open_os(const StringName& p_name, int64_t& p_size);
 		void _close_os();
 
 	protected:
@@ -44,10 +45,11 @@ namespace godot {
 
 		StringName get_name() const;
 		uint64_t get_size() const;
+		uint64_t get_mapped_size() const;
 		uint8_t get_status() const;
 
 		Error create(const StringName& p_name, const int64_t p_size, const int64_t p_scope);
-		Error open(const StringName& p_name, const int64_t p_size);
+		Error open(const StringName& p_name, int64_t p_size);
 		void close();
 
 	};
