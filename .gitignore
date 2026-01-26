@@ -12,6 +12,7 @@
 *.lib
 *.exp
 *.dll
+*.bat
 
 # Visual Studio
 .vs
