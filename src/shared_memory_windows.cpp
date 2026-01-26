@@ -3,17 +3,35 @@
 
 using namespace godot;
 
-Error SharedMemory::_create_os(const StringName& p_name, const uint64_t p_size, const uint64_t p_scope) {
+uint64_t SharedMemory::_get_mapped_size_os() const {
+	MEMORY_BASIC_INFORMATION mbi;
+	if (VirtualQuery(os_ptr, &mbi, sizeof(mbi))) {
+		return mbi.RegionSize;
+	}
+
+	ERR_PRINT(vformat(
+		"SharedMemory.get_mapped_size(): VirtualQuery failed (Windows error %d).",
+		(int)GetLastError()
+	));
+
+	return 0;
+}
+
+Error SharedMemory::_create_os(const StringName& p_name, const int64_t p_size, const int64_t p_scope) {
 	String win_name = String();
 	
-	if (p_scope == SCOPE_LOCAL) {
-		win_name = "Local\\" + String(p_name);
-	}
-	else if (p_scope == SCOPE_GLOBAL) {
-		win_name = "Global\\" + String(p_name);
-	}
-	else {
-		return ERR_INVALID_PARAMETER;
+	switch (p_scope) {
+		case SCOPE_LOCAL:
+			win_name = "Local\\" + String(p_name);
+			break;
+		case SCOPE_GLOBAL:
+			win_name = "Global\\" + String(p_name);
+			break;
+		default:
+			return _fail(
+				ERR_INVALID_PARAMETER,
+				"SharedMemory.create(): invalid scope."
+			);
 	}
 		
 	HANDLE hmap = CreateFileMappingW(
@@ -29,9 +47,17 @@ Error SharedMemory::_create_os(const StringName& p_name, const uint64_t p_size, 
 		return _fail(
 			ERR_CANT_CREATE,
 			vformat(
-				"SharedMemory: OpenFileMappingW failed (Windows error %d).",
+				"SharedMemory.create(): CreateFileMappingW failed (Windows error %d).",
 				(int)GetLastError()
 			)
+		);
+	}
+
+	if (GetLastError() == ERROR_ALREADY_EXISTS) {
+		CloseHandle(hmap);
+		return _fail(
+			ERR_ALREADY_EXISTS,
+			"SharedMemory.create(): Object already exists."
 		);
 	}
 
@@ -48,7 +74,7 @@ Error SharedMemory::_create_os(const StringName& p_name, const uint64_t p_size, 
 		return _fail(
 			ERR_CANT_CREATE,
 			vformat(
-				"SharedMemory: MapViewOfFile failed (Windows error %d).",
+				"SharedMemory.create(): MapViewOfFile failed (Windows error %d).",
 				(int)GetLastError()
 			)
 		);
@@ -60,17 +86,17 @@ Error SharedMemory::_create_os(const StringName& p_name, const uint64_t p_size, 
 	return OK;
 }
 
-Error SharedMemory::_open_os(const StringName& p_name, const uint64_t p_size) {
-	const wchar_t* prefixes[] = {
-		L"Local\\",
-		L"Global\\"
+Error SharedMemory::_open_os(const StringName& p_name, int64_t& p_size) {
+	const PackedStringArray prefixes = {
+		"Local\\",
+		"Global\\"
 	};
-	
+
 	HANDLE hmap = nullptr;
 	DWORD last_error = ERROR_SUCCESS;
 
-	for (const wchar_t* prefix : prefixes) {
-		String win_name = String(prefix) + String(p_name);
+	for (const String& prefix : prefixes) {
+		String win_name = prefix + String(p_name);
 
 		hmap = OpenFileMappingW(
 			FILE_MAP_ALL_ACCESS,
@@ -84,12 +110,12 @@ Error SharedMemory::_open_os(const StringName& p_name, const uint64_t p_size) {
 
 		last_error = GetLastError();
 	}
-
+	
 	if (!hmap) {
 		return _fail(
 			ERR_CANT_OPEN,
 			vformat(
-				"SharedMemory: OpenFileMappingW failed (Windows error %d).",
+				"SharedMemory.open(): OpenFileMappingW failed (Windows error %d).",
 				(int)last_error
 			)
 		);
@@ -108,10 +134,18 @@ Error SharedMemory::_open_os(const StringName& p_name, const uint64_t p_size) {
 		return _fail(
 			ERR_CANT_OPEN,
 			vformat(
-				"SharedMemory: MapViewOfFile failed (Windows error %d).",
+				"SharedMemory.open(): MapViewOfFile failed (Windows error %d).",
 				(int)GetLastError()
 			)
 		);
+	}
+
+	if (p_size == 0) {
+		// Returns the actual size of the mapped area.
+		MEMORY_BASIC_INFORMATION mbi;
+		if (VirtualQuery(ptr, &mbi, sizeof(mbi))) {
+			p_size = mbi.RegionSize;
+		}
 	}
 
 	os_handle = hmap;
