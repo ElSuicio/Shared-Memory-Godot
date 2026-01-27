@@ -156,7 +156,12 @@ PackedByteArray SharedMemory::read(const int64_t p_size, const int64_t p_offset)
 		return buffer;
 	}
 
-	if (p_offset + p_size > size) {
+	if (p_size > size) {
+		ERR_PRINT("SharedMemory.read(): size exceeds shared memory size.");
+		return buffer;
+	}
+
+	if (p_offset > size - p_size) {
 		ERR_PRINT("SharedMemory.read(): out of bounds.");
 		return buffer;
 	}
@@ -173,6 +178,44 @@ PackedByteArray SharedMemory::read(const int64_t p_size, const int64_t p_offset)
 }
 
 Error SharedMemory::write(const PackedByteArray& p_data, const int64_t p_offset) {
+	if (status != STATUS_CREATED && status != STATUS_OPEN) {
+		ERR_PRINT("SharedMemory.write(): invalid state.");
+		return ERR_UNCONFIGURED;
+	}
+
+	if (!os_ptr) {
+		ERR_PRINT("SharedMemory.write(): invalid memory pointer.");
+		return ERR_INVALID_DATA;
+	}
+	
+	const int64_t data_size = p_data.size();
+
+	if (data_size <= 0) {
+		ERR_PRINT("SharedMemory.write(): data is empty.");
+		return ERR_INVALID_PARAMETER;
+	}
+
+	if (p_offset < 0) {
+		ERR_PRINT("SharedMemory.write(): offset must be greater than or equal to zero.");
+		return ERR_INVALID_PARAMETER;
+	}
+
+	if (data_size > size) {
+		ERR_PRINT("SharedMemory.write(): data exceeds shared memory size.");
+		return ERR_INVALID_PARAMETER;
+	}
+
+	if (p_offset > size - data_size) {
+		ERR_PRINT("SharedMemory.write(): out of bounds.");
+		return ERR_INVALID_PARAMETER;
+	}
+
+	memcpy(
+		static_cast<uint8_t*>(os_ptr) + p_offset,
+		p_data.ptr(),
+		data_size
+	);
+
 	return OK;
 }
 
