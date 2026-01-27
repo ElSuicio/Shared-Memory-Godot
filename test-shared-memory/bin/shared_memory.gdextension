@@ -6,10 +6,10 @@ reloadable = true
 
 [libraries]
 
-windows.debug.x86_64 = "./shared_memory.windows.template_debug.x86_64.dll"
-windows.editor.x86_64 = "./shared_memory.windows.editor.x86_64.dll"
-windows.release.x86_64 = "./shared_memory.windows.template_release.x86_64.dll"
+windows.debug.x86_64 = "./windows/shared_memory.windows.template_debug.x86_64.dll"
+windows.editor.x86_64 = "./windows/shared_memory.windows.editor.x86_64.dll"
+windows.release.x86_64 = "./windows/shared_memory.windows.template_release.x86_64.dll"
 
-windows.debug.x86_32 = "./shared_memory.windows.template_debug.x86_32.dll"
-windows.editor.x86_32 = "./shared_memory.windows.editor.x86_32.dll"
-windows.release.x86_32 = "./shared_memory.windows.template_release.x86_32.dll"
+windows.debug.x86_32 = "./windows/shared_memory.windows.template_debug.x86_32.dll"
+windows.editor.x86_32 = "./windows/shared_memory.windows.editor.x86_32.dll"
+windows.release.x86_32 = "./windows/shared_memory.windows.template_release.x86_32.dll"
