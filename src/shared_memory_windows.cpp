@@ -21,10 +21,10 @@ Error SharedMemory::_create_os(const StringName& p_name, const int64_t p_size, c
 	String win_name = String();
 	
 	switch (p_scope) {
-		case SCOPE_LOCAL:
+		case LOCAL_SCOPE:
 			win_name = "Local\\" + String(p_name);
 			break;
-		case SCOPE_GLOBAL:
+		case GLOBAL_SCOPE:
 			win_name = "Global\\" + String(p_name);
 			break;
 		default:

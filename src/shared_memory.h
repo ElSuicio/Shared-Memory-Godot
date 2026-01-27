@@ -17,8 +17,8 @@ namespace godot {
 		};
 
 		enum Scope {
-			SCOPE_LOCAL = 0,
-			SCOPE_GLOBAL = 1
+			LOCAL_SCOPE = 0,
+			GLOBAL_SCOPE = 1
 		};
 
 		StringName name;
@@ -34,6 +34,7 @@ namespace godot {
 
 		Error _create_os(const StringName& p_name, const int64_t p_size, const int64_t p_scope);
 		Error _open_os(const StringName& p_name, int64_t& p_size);
+
 		void _close_os();
 
 	protected:
@@ -50,6 +51,10 @@ namespace godot {
 
 		Error create(const StringName& p_name, const int64_t p_size, const int64_t p_scope);
 		Error open(const StringName& p_name, int64_t p_size);
+
+		PackedByteArray read(const int64_t p_size, const int64_t p_offset) const;
+		Error write(const PackedByteArray& p_data, const int64_t p_offset);
+
 		void close();
 
 	};

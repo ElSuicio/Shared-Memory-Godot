@@ -16,8 +16,8 @@ void SharedMemory::_bind_methods() {
 	ClassDB::bind_integer_constant("SharedMemory", "Status", "STATUS_CLOSED", STATUS_CLOSED, false);
 	ClassDB::bind_integer_constant("SharedMemory", "Status", "STATUS_ERROR", STATUS_ERROR, false);
 
-	ClassDB::bind_integer_constant("SharedMemory", "Scope", "SCOPE_LOCAL", SCOPE_LOCAL, false);
-	ClassDB::bind_integer_constant("SharedMemory", "Scope", "SCOPE_GLOBAL", SCOPE_GLOBAL, false);
+	ClassDB::bind_integer_constant("SharedMemory", "Scope", "LOCAL_SCOPE", LOCAL_SCOPE, false);
+	ClassDB::bind_integer_constant("SharedMemory", "Scope", "GLOBAL_SCOPE", GLOBAL_SCOPE, false);
 
 	ClassDB::bind_method(D_METHOD("get_name"), &SharedMemory::get_name);
 	ClassDB::bind_method(D_METHOD("get_size"), &SharedMemory::get_size);
@@ -25,8 +25,11 @@ void SharedMemory::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_status"), &SharedMemory::get_status);
 
 	ClassDB::bind_method(D_METHOD("create", "name", "size", "scope"), &SharedMemory::create, DEFVAL(0));
-
 	ClassDB::bind_method(D_METHOD("open", "name", "size"), &SharedMemory::open, DEFVAL(0));
+
+	ClassDB::bind_method(D_METHOD("read", "size", "offset"), &SharedMemory::read, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("write", "data", "offset"), &SharedMemory::write, DEFVAL(0));
+
 	ClassDB::bind_method(D_METHOD("close"), &SharedMemory::close);
 }
 
@@ -130,6 +133,49 @@ Error SharedMemory::open(const StringName& p_name, int64_t p_size) {
 	return OK;
 }
 
+PackedByteArray SharedMemory::read(const int64_t p_size, const int64_t p_offset) const {
+	PackedByteArray buffer = PackedByteArray();
+	
+	if (status != STATUS_CREATED && status != STATUS_OPEN) {
+		ERR_PRINT("SharedMemory.read(): invalid state.");
+		return buffer;
+	}
+	
+	if (!os_ptr) {
+		ERR_PRINT("SharedMemory.read(): invalid memory pointer.");
+		return buffer;
+	}
+
+	if (p_size <= 0) {
+		ERR_PRINT("SharedMemory.read(): size must be greater than zero.");
+		return buffer;
+	}
+
+	if (p_offset < 0) {
+		ERR_PRINT("SharedMemory.read(): offset must be greater than or equal to zero.");
+		return buffer;
+	}
+
+	if (p_offset + p_size > size) {
+		ERR_PRINT("SharedMemory.read(): out of bounds.");
+		return buffer;
+	}
+
+	buffer.resize(p_size);
+
+	memcpy(
+		buffer.ptrw(),
+		static_cast<const uint8_t*>(os_ptr) + p_offset,
+		p_size
+	);
+
+	return buffer;
+}
+
+Error SharedMemory::write(const PackedByteArray& p_data, const int64_t p_offset) {
+	return OK;
+}
+
 void SharedMemory::close() {
 	if (status == STATUS_CREATED || status == STATUS_OPEN) {
 		_close_os();
@@ -138,4 +184,5 @@ void SharedMemory::close() {
 
 	name = StringName();
 	size = 0;
+
 }
