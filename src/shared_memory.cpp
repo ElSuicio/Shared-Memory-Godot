@@ -46,7 +46,7 @@ void SharedMemory::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("create", "name", "size", "scope"), &SharedMemory::create, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("open", "name", "size"), &SharedMemory::open, DEFVAL(0));
 
-	ClassDB::bind_method(D_METHOD("read", "size", "offset"), &SharedMemory::read, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("read", "size", "offset"), &SharedMemory::read, DEFVAL(0), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("write", "data", "offset"), &SharedMemory::write, DEFVAL(0));
 
 	ClassDB::bind_method(D_METHOD("close"), &SharedMemory::close);
@@ -152,7 +152,7 @@ Error SharedMemory::open(const StringName& p_name, int64_t p_size) {
 	return OK;
 }
 
-PackedByteArray SharedMemory::read(const int64_t p_size, const int64_t p_offset) const {
+PackedByteArray SharedMemory::read(int64_t p_size, const int64_t p_offset) const {
 	PackedByteArray buffer = PackedByteArray();
 	
 	if (status != STATUS_CREATED && status != STATUS_OPEN) {
@@ -165,23 +165,27 @@ PackedByteArray SharedMemory::read(const int64_t p_size, const int64_t p_offset)
 		return buffer;
 	}
 
-	if (p_size <= 0) {
-		ERR_PRINT("SharedMemory.read(): size must be greater than zero.");
-		return buffer;
-	}
-
 	if (p_offset < 0) {
 		ERR_PRINT("SharedMemory.read(): offset must be greater than or equal to zero.");
 		return buffer;
 	}
 
-	if (p_size > size) {
-		ERR_PRINT("SharedMemory.read(): size exceeds shared memory size.");
+	if (p_offset >= size) {
+		ERR_PRINT("SharedMemory.read(): offset out of bounds.");
+		return buffer;
+	}
+
+	if (p_size == 0) {
+		p_size = size - p_offset;
+	}
+
+	if (p_size < 0) {
+		ERR_PRINT("SharedMemory.read(): size must be greater than or equal to zero.");
 		return buffer;
 	}
 
 	if (p_offset > size - p_size) {
-		ERR_PRINT("SharedMemory.read(): out of bounds.");
+		ERR_PRINT("SharedMemory.read(): size out of bounds.");
 		return buffer;
 	}
 
@@ -225,7 +229,7 @@ Error SharedMemory::write(const PackedByteArray& p_data, const int64_t p_offset)
 	}
 
 	if (p_offset > size - data_size) {
-		ERR_PRINT("SharedMemory.write(): out of bounds.");
+		ERR_PRINT("SharedMemory.write(): read exceeds shared memory bounds.");
 		return ERR_INVALID_PARAMETER;
 	}
 

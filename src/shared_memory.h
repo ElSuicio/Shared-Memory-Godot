@@ -71,7 +71,7 @@ namespace godot {
 		Error create(const StringName& p_name, const int64_t p_size, const int64_t p_scope);
 		Error open(const StringName& p_name, int64_t p_size);
 
-		PackedByteArray read(const int64_t p_size, const int64_t p_offset) const;
+		PackedByteArray read(int64_t p_size, const int64_t p_offset) const;
 		Error write(const PackedByteArray& p_data, const int64_t p_offset);
 
 		void close();
