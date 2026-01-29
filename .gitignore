@@ -4,6 +4,7 @@
 .godot/
 
 # Python specific ignores
+__pycache__/
 .venv/
 
 # Binaries
