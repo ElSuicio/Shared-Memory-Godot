@@ -1,11 +1,12 @@
-# Shared Memory - Godot
+﻿# Shared Memory - Godot
 > [!WARNING]
 >
 > This addon does not provide synchronization methods. Concurrent access must be coordinated by the user.
 
-This is an addon for Godot 4.3+ that adds the `SharedMemory` class for creating, opening, and directly accessing shared memory segments for inter-process communication (IPC).
+This is an addon for **Godot 4.3+** that adds the `SharedMemory` class for creating, opening, and directly accessing shared memory segments for **inter-process communication (IPC)**.
 
 ### How to use
+#### Write (Godot → Python):
 ``` gdscript
 # Godot Shared Memory Example.
 extends Node
@@ -20,7 +21,7 @@ func _ready() -> void:
 	
 	shm.close()
 ```
-
+#### Read (Python):
 ```python
 # Python Shared Memory Example.
 import mmap
@@ -33,6 +34,48 @@ def main():
 
 if __name__ == "__main__":
     main()
+```
+##### Write (Python -> Godot):
+``` python
+# Python Shared Memory Example.
+import mmap
+import time
+
+SIZE = 1024
+
+def main():
+    mm = mmap.mmap(-1, SIZE, tagname="SharedMemoryExample")
+
+    mm.seek(0)
+    mm.write(b"Hello world from Python Shared Memory!")
+
+    time.sleep(60)
+
+if __name__ == "__main__":
+    main()
+```
+##### Read (Godot):
+``` gdscript
+# Godot Shared Memory Example.
+extends Node
+
+func rstrip(buffer : PackedByteArray) -> PackedByteArray:
+	var out : PackedByteArray = buffer.duplicate()
+	
+	while out.size() > 0 and out[out.size() - 1] == 0:
+		out.resize(out.size() - 1)
+	
+	return out
+
+func _ready() -> void:
+	var shm : SharedMemory = SharedMemory.new()
+	
+	if shm.open("SharedMemoryExample", 1024) == OK:
+		var buffer : PackedByteArray = shm.read()
+		buffer = rstrip(buffer)
+		print(buffer.get_string_from_utf8())
+	
+	shm.close()
 ```
 
 ## Compiling from source
