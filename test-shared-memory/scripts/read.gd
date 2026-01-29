@@ -14,11 +14,11 @@ const SERVER_PORT : int = 8080
 var python_interpreter_path : String = ProjectSettings.globalize_path("res://python/.venv/Scripts/python")
 var python_script_path : String = ProjectSettings.globalize_path("res://python/src/read.py")
 
-func start_python(interpreter_path : String, script_path : String, arguments : Array, open_conole : bool) -> int:
+func start_python(interpreter_path : String, script_path : String, arguments : Array, open_console : bool) -> int:
 	var payload : PackedByteArray = JSON.stringify(arguments).to_utf8_buffer()
 	var encoded = Marshalls.raw_to_base64(payload)
 	
-	return OS.create_process(interpreter_path, [script_path, encoded], open_conole)
+	return OS.create_process(interpreter_path, [script_path, encoded], open_console)
 
 func _ready() -> void:
 	pass
@@ -39,8 +39,6 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	client.poll()
 	
-	#print(client.get_status())
-	
 	if(client.get_status() != StreamPeerTCP.STATUS_CONNECTED):
 		return
 	
@@ -55,7 +53,6 @@ func _process(_delta: float) -> void:
 	shm.open(SHM_NAME, SHM_SIZE)
 	var size : int = shm.read(8).decode_u64(0)
 	var buffer : PackedByteArray = shm.read(size, 8)
-	print(shm.read(8))
 	
 	var img = Image.new()
 	img.load_png_from_buffer(buffer)
