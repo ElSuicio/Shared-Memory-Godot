@@ -35,6 +35,11 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+
+``` bash
+Hello world from Godot Shared Memory!
+```
+
 ##### Write (Python -> Godot):
 ``` python
 # Python Shared Memory Example.
@@ -76,6 +81,10 @@ func _ready() -> void:
 		print(buffer.get_string_from_utf8())
 	
 	shm.close()
+```
+
+``` bash
+Hello world from Python Shared Memory!
 ```
 
 ## Compiling from source
