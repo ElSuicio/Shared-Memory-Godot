@@ -1,7 +1,7 @@
 
 /*
 
-Copyright 2026 Giovanni Gutiérrez Ramírez
+Copyright 2026 Giovanni GutiÃ©rrez RamÃ­rez
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
