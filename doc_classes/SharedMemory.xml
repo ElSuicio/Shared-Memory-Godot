@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="SharedMemory" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
 	<brief_description>
-		Class that allows creating, opening, and directly accessing shared memory segments for inter-process communication (IPC).
+		
 	</brief_description>
 	<description>
-		Class that allows multiple processes to access the same shared memory area.
-		It enables efficient sharing of large volumes of data by mapping a common memory region into the address space of each process.
-		The class provides methods to create, open, and manage shared memory segments, with direct byte-level read and write operations.
-		Once the memory is mapped, reading and writing data does not require additional kernel calls per operation, resulting in very low overhead.
-		Designed for high-performance inter-process communication (IPC) scenarios where file or socket-based mechanisms are not suitable.
+		
 	</description>
 	<tutorials>
 	</tutorials>
@@ -16,8 +12,7 @@
 		<method name="close">
 			<return type="void" />
 			<description>
-				Unmaps the shared memory region from the current process and releases the associated system resources.
-				Calling this method does not destroy the shared memory if it is still in use by other processes.
+				
 			</description>
 		</method>
 		<method name="create">
@@ -26,34 +21,31 @@
 			<param index="1" name="size" type="int" />
 			<param index="2" name="scope" type="int" default="0" />
 			<description>
-				Creates a new shared memory segment with the given name and size.
-				The scope parameter determines whether the segment is visible only to the current user session or globally across the system (may require administrator privileges depending on the operating system).
-				Returns an error if a shared memory segment with the same name already exists.
+				
 			</description>
 		</method>
 		<method name="get_mapped_size" qualifiers="const">
 			<return type="int" />
 			<description>
-				Returns the total size of the mapped shared memory region as provided by the operating system.
+				
 			</description>
 		</method>
 		<method name="get_name" qualifiers="const">
 			<return type="StringName" />
 			<description>
-				Returns the name of the shared memory segment.
+				
 			</description>
 		</method>
 		<method name="get_size" qualifiers="const">
 			<return type="int" />
 			<description>
-				Returns the logical size of the shared memory segment requested by this instance.
-				If it is not available, returns the total size of the mapped region as reported by the operating system.
+				
 			</description>
 		</method>
 		<method name="get_status" qualifiers="const">
 			<return type="int" />
 			<description>
-				Returns the current status of the shared memory object, indicating whether it is uninitialized, created, opened, closed, or in an error state.
+				
 			</description>
 		</method>
 		<method name="open">
@@ -61,8 +53,7 @@
 			<param index="0" name="name" type="StringName" />
 			<param index="1" name="size" type="int" default="0" />
 			<description>
-				Opens an existing shared memory segment with the given name.
-				If size is 0, the entire shared memory region is mapped.
+				
 			</description>
 		</method>
 		<method name="read" qualifiers="const">
@@ -70,7 +61,7 @@
 			<param index="0" name="size" type="int" />
 			<param index="1" name="offset" type="int" default="0" />
 			<description>
-				Reads and return a PackedByteArray from shared memory starting at the specified offset.
+				
 			</description>
 		</method>
 		<method name="write">
@@ -78,25 +69,31 @@
 			<param index="0" name="data" type="PackedByteArray" />
 			<param index="1" name="offset" type="int" default="0" />
 			<description>
-				Writes the contents of the given PackedByteArray into the shared memory starting at the specified offset.
-				Returns an error if the write operation exceeds the bounds of the mapped memory.
+				
 			</description>
 		</method>
 	</methods>
 	<constants>
 		<constant name="STATUS_UNINITIALIZED" value="0" enum="Status">
+			
 		</constant>
 		<constant name="STATUS_CREATED" value="1" enum="Status">
+			
 		</constant>
 		<constant name="STATUS_OPEN" value="2" enum="Status">
+			
 		</constant>
 		<constant name="STATUS_CLOSED" value="3" enum="Status">
+			
 		</constant>
 		<constant name="STATUS_ERROR" value="4" enum="Status">
+			
 		</constant>
 		<constant name="LOCAL_SCOPE" value="0" enum="Scope">
+			
 		</constant>
 		<constant name="GLOBAL_SCOPE" value="1" enum="Scope">
+			
 		</constant>
 	</constants>
 </class>
