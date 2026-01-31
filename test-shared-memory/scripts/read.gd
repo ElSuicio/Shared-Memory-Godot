@@ -9,7 +9,7 @@ const SERVER_PORT : int = 8080
 @onready var shm : SharedMemory = SharedMemory.new()
 @onready var client : StreamPeerTCP = StreamPeerTCP.new()
 
-@export var texture_rect: TextureRect
+@export var texture_rect : TextureRect
 
 var python_interpreter_path : String = ProjectSettings.globalize_path("res://python/.venv/Scripts/python")
 var python_script_path : String = ProjectSettings.globalize_path("res://python/src/read.py")
