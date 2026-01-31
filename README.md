@@ -91,9 +91,11 @@ Hello world from Python Shared Memory!
 ### Requirements
 - [Python 3.8+](https://www.python.org/downloads/)
 - [SCons 4.0+](https://github.com/SCons/scons)
+- [CMake 3.2+](https://cmake.org/download/)
 - [C++ compiler](https://docs.godotengine.org/en/latest/engine_details/development/compiling/)
 
 ### How to build
+#### Build with SCons
 In this repository, run:
 ```bash
 scons platform=<platform> target=<target> arch=<architecture>
@@ -103,6 +105,48 @@ Example:
 ```bash
 scons platform=windows target=editor arch=x86_64
 ```
+
+#### Build with CMake
+In this repository, run:
+> [!NOTE]
+>
+> Uses the generator default build type.
+
+```bash
+cmake -S ./ -B build -DGODOTCPP_TARGET=<target choice>
+cmake --build build
+```
+
+Example:
+```bash
+cmake -S ./ -B build -DGODOTCPP_TARGET=editor
+cmake --build build
+```
+
+> [!WARNING]
+>
+> On multi-config generators (Visual Studio), use:
+> ```bash
+> # Debug
+> cmake --build build --config Debug
+>
+> # Release
+> cmake --build build --config Release
+> ```
+>
+> On single-config generators (Ninja / Make), use:
+>
+> ```bash
+> # Debug
+> cmake -S ./ -B build-debug -DGODOTCPP_TARGET=editor -DCMAKE_BUILD_TYPE=Debug
+> cmake --build build-debug
+>
+> # Release
+> cmake -S ./ -B build-release -DGODOTCPP_TARGET=editor -DCMAKE_BUILD_TYPE=Release
+> cmake --build build-release
+> ```
+
+[More details](https://docs.godotengine.org/en/latest/tutorials/scripting/cpp/build_system/cmake.html).
 
 ## Links & Support
 - [itch.io](https://interdreamsoft.itch.io/)

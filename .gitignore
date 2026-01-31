@@ -10,10 +10,17 @@ __pycache__/
 # Binaries
 *.obj
 *.dblite
+*.dll
 *.lib
 *.exp
-*.dll
+*.ilk
+*.pdb
 *.bat
 
 # Visual Studio
 .vs
+.vscode
+out/
+build/
+build-debug/
+build-release/
