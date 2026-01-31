@@ -146,7 +146,7 @@ cmake --build build
 > cmake --build build-release
 > ```
 
-[More details](https://docs.godotengine.org/en/latest/tutorials/scripting/cpp/build_system/cmake.html).
+[More details](https://docs.godotengine.org/en/latest/tutorials/scripting/cpp/build_system/cmake.html)
 
 ## Links & Support
 - [itch.io](https://interdreamsoft.itch.io/)
