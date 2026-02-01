@@ -15,12 +15,12 @@ __pycache__/
 *.exp
 *.ilk
 *.pdb
+*.so
 *.bat
 
 # Visual Studio
 .vs
 .vscode
+.cache
 out/
 build/
-build-debug/
-build-release/
