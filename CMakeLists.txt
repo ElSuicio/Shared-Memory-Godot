@@ -38,10 +38,6 @@ target_link_libraries(${LIBRARY_NAME}
         godot-cpp
 )
 
-if(MSVC)
-    target_compile_options(${LIBRARY_NAME} PRIVATE /utf-8)
-endif()
-
 file(GLOB_RECURSE DOC_XML CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/doc_classes/*.xml")
 
 if(DOC_XML AND GODOTCPP_TARGET MATCHES "editor|template_debug")
