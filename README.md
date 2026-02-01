@@ -103,7 +103,7 @@ scons platform=<platform> target=<target> arch=<architecture>
 
 Example:
 ```bash
-scons platform=windows target=editor arch=x86_64
+scons platform=windows target=template_debug arch=x86_64
 ```
 
 #### Build with CMake
@@ -113,13 +113,13 @@ In this repository, run:
 > Uses the generator default build type.
 
 ```bash
-cmake -S ./ -B build -DGODOTCPP_TARGET=<target choice>
+cmake -S ./ -B build -A <architecture> -DGODOTCPP_TARGET=<target choice>
 cmake --build build
 ```
 
 Example:
 ```bash
-cmake -S ./ -B build -DGODOTCPP_TARGET=editor
+cmake -S ./ -B build -A x64 -DGODOTCPP_TARGET=template_debug
 cmake --build build
 ```
 
@@ -138,11 +138,11 @@ cmake --build build
 >
 > ```bash
 > # Debug
-> cmake -S ./ -B build-debug -DGODOTCPP_TARGET=editor -DCMAKE_BUILD_TYPE=Debug
+> cmake -S ./ -B build-debug -DGODOTCPP_TARGET=template_debug -DCMAKE_BUILD_TYPE=Debug
 > cmake --build build-debug
 >
 > # Release
-> cmake -S ./ -B build-release -DGODOTCPP_TARGET=editor -DCMAKE_BUILD_TYPE=Release
+> cmake -S ./ -B build-release -DGODOTCPP_TARGET=template_debug -DCMAKE_BUILD_TYPE=Release
 > cmake --build build-release
 > ```
 
