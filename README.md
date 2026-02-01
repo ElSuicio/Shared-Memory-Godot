@@ -96,7 +96,7 @@ Hello world from Python Shared Memory!
 
 ### How to build
 #### Build with SCons
-In this repository, run:
+From the repository root, run:
 ```bash
 scons platform=<platform> target=<target> arch=<architecture>
 ```
@@ -107,10 +107,18 @@ scons platform=windows target=template_debug arch=x86_64
 ```
 
 #### Build with CMake
-In this repository, run:
+From the repository root, run:
 > [!NOTE]
 >
-> Uses the generator default build type.
+> The default CMake generator depends on your platform:
+>
+> **Windows**: Visual Studio (multi-config).
+> **Linux / macOS**: Makefiles or Ninja (single-config).
+>
+> Ninja is **recommended** on Linux / macOS for faster builds and better tooling integration but it is **not required**.
+>
+
+Basic build (default generator)
 
 ```bash
 cmake -S ./ -B build -A <architecture> -DGODOTCPP_TARGET=<target choice>
@@ -123,28 +131,25 @@ cmake -S ./ -B build -A x64 -DGODOTCPP_TARGET=template_debug
 cmake --build build
 ```
 
-> [!WARNING]
->
-> On multi-config generators (Visual Studio), use:
-> ```bash
-> # Debug
-> cmake --build build --config Debug
->
-> # Release
-> cmake --build build --config Release
-> ```
->
-> On single-config generators (Ninja / Make), use:
->
-> ```bash
-> # Debug
-> cmake -S ./ -B build-debug -DGODOTCPP_TARGET=template_debug -DCMAKE_BUILD_TYPE=Debug
-> cmake --build build-debug
->
-> # Release
-> cmake -S ./ -B build-release -DGODOTCPP_TARGET=template_debug -DCMAKE_BUILD_TYPE=Release
-> cmake --build build-release
-> ```
+Multi-config generators:
+```bash
+# Debug
+cmake --build build --config Debug
+
+# Release
+cmake --build build --config Release
+```
+
+Single-config generators:
+```bash
+# Debug
+cmake -S ./ -B build -G Ninja -DGODOTCPP_TARGET=template_debug -DCMAKE_BUILD_TYPE=Debug
+cmake --build build
+
+# Release
+cmake -S ./ -B build -G Ninja -DGODOTCPP_TARGET=template_release -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+```
 
 [More details](https://docs.godotengine.org/en/latest/tutorials/scripting/cpp/build_system/cmake.html)
 
