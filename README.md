@@ -112,9 +112,9 @@ From the repository root, run:
 >
 > The default CMake generator depends on your platform:
 >
-> **Windows**: Visual Studio (multi-config).
+> > **Windows**: Visual Studio (multi-config).
 > 
-> **Linux / macOS**: Makefiles or Ninja (single-config).
+> > **Linux / macOS**: Makefiles or Ninja (single-config).
 >
 > Ninja is **recommended** on Linux / macOS for faster builds and better tooling integration but it is **not required**.
 >
