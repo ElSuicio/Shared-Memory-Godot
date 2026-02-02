@@ -40,6 +40,12 @@ namespace godot {
 			GLOBAL_SCOPE = 1
 		};
 
+		enum Access {
+			USER_ACCESS = 0,
+			GROUP_ACCESS = 1,
+			PUBLIC_ACCESS = 2
+		};
+
 		StringName name;
 		uint64_t size = 0;
 		uint8_t status = STATUS_UNINITIALIZED;
@@ -51,7 +57,7 @@ namespace godot {
 
 		uint64_t _get_mapped_size_os() const;
 
-		Error _create_os(const StringName& p_name, const int64_t p_size, const int64_t p_scope);
+		Error _create_os(const StringName& p_name, const int64_t p_size, const int64_t p_scope, const int64_t p_access);
 		Error _open_os(const StringName& p_name, int64_t& p_size);
 
 		void _close_os();
@@ -68,7 +74,7 @@ namespace godot {
 		uint64_t get_mapped_size() const;
 		uint8_t get_status() const;
 
-		Error create(const StringName& p_name, const int64_t p_size, const int64_t p_scope);
+		Error create(const StringName& p_name, const int64_t p_size, const int64_t p_scope, const int64_t p_access);
 		Error open(const StringName& p_name, int64_t p_size);
 
 		PackedByteArray read(int64_t p_size, const int64_t p_offset) const;

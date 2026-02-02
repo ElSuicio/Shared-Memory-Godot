@@ -36,7 +36,7 @@ uint64_t SharedMemory::_get_mapped_size_os() const {
 	return 0;
 }
 
-Error SharedMemory::_create_os(const StringName& p_name, const int64_t p_size, const int64_t p_scope) {
+Error SharedMemory::_create_os(const StringName& p_name, const int64_t p_size, const int64_t p_scope, const int64_t p_access) {
 	String win_name = String();
 	
 	switch (p_scope) {

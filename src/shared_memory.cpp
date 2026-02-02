@@ -38,12 +38,16 @@ void SharedMemory::_bind_methods() {
 	ClassDB::bind_integer_constant("SharedMemory", "Scope", "LOCAL_SCOPE", LOCAL_SCOPE, false);
 	ClassDB::bind_integer_constant("SharedMemory", "Scope", "GLOBAL_SCOPE", GLOBAL_SCOPE, false);
 
+	ClassDB::bind_integer_constant("SharedMemory", "Access", "USER_ACCESS", USER_ACCESS, false);
+	ClassDB::bind_integer_constant("SharedMemory", "Access", "GROUP_ACCESS", GROUP_ACCESS, false);
+	ClassDB::bind_integer_constant("SharedMemory", "Access", "PUBLIC_ACCESS", PUBLIC_ACCESS, false);
+
 	ClassDB::bind_method(D_METHOD("get_name"), &SharedMemory::get_name);
 	ClassDB::bind_method(D_METHOD("get_size"), &SharedMemory::get_size);
 	ClassDB::bind_method(D_METHOD("get_mapped_size"), &SharedMemory::get_mapped_size);
 	ClassDB::bind_method(D_METHOD("get_status"), &SharedMemory::get_status);
 
-	ClassDB::bind_method(D_METHOD("create", "name", "size", "scope"), &SharedMemory::create, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("create", "name", "size", "scope", "access"), &SharedMemory::create, DEFVAL(0), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("open", "name", "size"), &SharedMemory::open, DEFVAL(0));
 
 	ClassDB::bind_method(D_METHOD("read", "size", "offset"), &SharedMemory::read, DEFVAL(0), DEFVAL(0));
@@ -86,7 +90,7 @@ uint8_t SharedMemory::get_status() const {
 	return status;
 }
 
-Error SharedMemory::create(const StringName& p_name, const int64_t p_size, const int64_t p_scope) {	
+Error SharedMemory::create(const StringName& p_name, const int64_t p_size, const int64_t p_scope, const int64_t p_access) {	
 	if (p_name.is_empty()) {
 		return _fail(
 			ERR_INVALID_PARAMETER,
@@ -106,7 +110,7 @@ Error SharedMemory::create(const StringName& p_name, const int64_t p_size, const
 		return ERR_ALREADY_IN_USE;
 	}
 
-	Error create_error = _create_os(p_name, p_size, p_scope);
+	Error create_error = _create_os(p_name, p_size, p_scope, p_access);
 	
 	if (create_error != OK) {
 		return create_error;
