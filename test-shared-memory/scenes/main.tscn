@@ -1,10 +1,9 @@
 [gd_scene format=3 uid="uid://bal5btwrq2l3w"]
 
-[ext_resource type="Script" uid="uid://slo8xvsq5ibs" path="res://scripts/read.gd" id="1_o5qli"]
+[ext_resource type="Script" uid="uid://daorg1djm1bp1" path="res://scripts/main.gd" id="1_o5qli"]
 
-[node name="Main" type="Node" unique_id=1806278708 node_paths=PackedStringArray("texture_rect")]
+[node name="Main" type="Node" unique_id=1806278708]
 script = ExtResource("1_o5qli")
-texture_rect = NodePath("TextureRect")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=451935385]
 anchors_preset = 13

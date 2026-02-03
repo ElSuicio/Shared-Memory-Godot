@@ -13,3 +13,5 @@ windows.release.x86_64 = "./windows/shared_memory.windows.template_release.x86_6
 windows.debug.x86_32 = "./windows/shared_memory.windows.template_debug.x86_32.dll"
 windows.editor.x86_32 = "./windows/shared_memory.windows.editor.x86_32.dll"
 windows.release.x86_32 = "./windows/shared_memory.windows.template_release.x86_32.dll"
+
+linux.debug.x86_64 = "./linux/shared_memory.linux.template_debug.x86_64.so"

@@ -23,6 +23,11 @@ limitations under the License.
 using namespace godot;
 
 uint64_t SharedMemory::_get_mapped_size_os() const {
+	if (!os_ptr || !os_handle) {
+		ERR_PRINT("SharedMemory.get_mapped_size(): unmapped memory.");
+		return 0;
+	}
+
 	MEMORY_BASIC_INFORMATION mbi;
 	if (VirtualQuery(os_ptr, &mbi, sizeof(mbi))) {
 		return mbi.RegionSize;
@@ -36,7 +41,7 @@ uint64_t SharedMemory::_get_mapped_size_os() const {
 	return 0;
 }
 
-Error SharedMemory::_create_os(const StringName& p_name, const int64_t p_size, const int64_t p_scope, const int64_t p_access) {
+Error SharedMemory::_create_os(const StringName& p_name, const int64_t p_size, const int64_t p_scope) {
 	String win_name = String();
 	
 	switch (p_scope) {
