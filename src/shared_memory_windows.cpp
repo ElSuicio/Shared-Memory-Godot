@@ -190,3 +190,7 @@ void SharedMemory::_close_os() {
 	}
 
 }
+
+void SharedMemory::_unlink_os() {
+	
+}

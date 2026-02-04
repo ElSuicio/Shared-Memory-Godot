@@ -50,6 +50,7 @@ void SharedMemory::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("write", "data", "offset"), &SharedMemory::write, DEFVAL(0));
 
 	ClassDB::bind_method(D_METHOD("close"), &SharedMemory::close);
+	ClassDB::bind_method(D_METHOD("unlink"), &SharedMemory::unlink);
 }
 
 SharedMemory::SharedMemory() {
@@ -245,5 +246,12 @@ void SharedMemory::close() {
 
 	name = StringName();
 	size = 0;
+	mapped_size = 0;
 
+}
+
+void SharedMemory::unlink() {
+	if (status == STATUS_CREATED || status == STATUS_OPEN) {
+		_unlink_os();
+	}
 }

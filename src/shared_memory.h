@@ -42,6 +42,7 @@ namespace godot {
 
 		StringName name;
 		uint64_t size = 0;
+		uint64_t mapped_size = 0;
 		uint8_t status = STATUS_UNINITIALIZED;
 
 		void* os_handle = nullptr;
@@ -55,6 +56,7 @@ namespace godot {
 		Error _open_os(const StringName& p_name, int64_t& p_size);
 
 		void _close_os();
+		void _unlink_os();
 
 	protected:
 		static void _bind_methods();
@@ -75,6 +77,6 @@ namespace godot {
 		Error write(const PackedByteArray& p_data, const int64_t p_offset);
 
 		void close();
-
+		void unlink();
 	};
 }

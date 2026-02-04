@@ -18,29 +18,22 @@ limitations under the License.
 */
 
 #include "shared_memory.h"
-#include "process_handle_posix.h"
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
-//#include <cstring>
 
 using namespace godot;
 
-static constexpr size_t HEADER_SIZE = sizeof(ProcessHandle);
-
-
-
 uint64_t SharedMemory::_get_mapped_size_os() const {
-    return HEADER_SIZE + size;
+    return mapped_size;
 }
 
 Error SharedMemory::_create_os(const StringName& p_name, const int64_t p_size, const int64_t p_scope) {
 	String posix_name = "/" + String(p_name);
-	size_t posix_size = HEADER_SIZE + p_size;
 
-	if (p_scope != LOCAL_SCOPE && p_name != GLOBAL_SCOPE) {
+	if (p_scope != LOCAL_SCOPE && p_scope != GLOBAL_SCOPE) {
 		return _fail(
 			ERR_INVALID_PARAMETER,
 			"SharedMemory.create(): invalid scope."
@@ -83,6 +76,22 @@ Error SharedMemory::_create_os(const StringName& p_name, const int64_t p_size, c
 		);
 	}
 
+	struct stat st;
+	if (::fstat(file_descriptor, &st) == -1) {
+		::close(file_descriptor);
+		::shm_unlink(posix_name.utf8().get_data());
+
+		return _fail(
+			ERR_CANT_CREATE,
+			vformat(
+				"SharedMemory.create(): fstat failed (%s).",
+				strerror(errno)
+			)
+		);
+	}
+
+	mapped_size = st.st_size;
+
 	void* ptr = ::mmap(
 		nullptr,
 		p_size,
@@ -113,6 +122,92 @@ Error SharedMemory::_create_os(const StringName& p_name, const int64_t p_size, c
 }
 
 Error SharedMemory::_open_os(const StringName& p_name, int64_t& p_size) {
+	String posix_name = "/" + String(p_name);
+
+	int file_descriptor = ::shm_open(
+        posix_name.utf8().get_data(),
+        O_RDWR,
+        0600
+    );
+
+	if (file_descriptor == -1) {
+		if (errno == ENOENT) {
+			return _fail(
+				ERR_DOES_NOT_EXIST,
+				vformat(
+					"SharedMemory.open(): shared memory '%s' does not exist.",
+					posix_name
+				)
+        	);
+		}
+
+        return _fail(
+            ERR_CANT_OPEN,
+			vformat(
+				"SharedMemory.open(): shm_open failed (%s).",
+				strerror(errno)
+			)
+        );
+    }
+
+	struct stat st;
+	if (::fstat(file_descriptor, &st) == -1) {
+		::close(file_descriptor);
+		return _fail(
+			ERR_CANT_OPEN,
+			vformat(
+				"SharedMemory.open(): fstat failed (%s).",
+				strerror(errno)
+			)
+		);
+	}
+
+	mapped_size = st.st_size;
+
+	if (mapped_size <= 0) {
+		::close(file_descriptor);
+		return _fail(
+			ERR_INVALID_DATA,
+			"SharedMemory.open(): shared memory size is invalid."
+		);
+	}
+
+	if (p_size == 0) {
+		p_size = mapped_size;
+	}
+	else if (p_size > mapped_size) {
+		::close(file_descriptor);
+		return _fail(
+			ERR_INVALID_PARAMETER,
+			"SharedMemory.open(): requested size exceeds shared memory size."
+		);
+	}
+
+	void* ptr = ::mmap(
+		nullptr,
+		p_size,
+		PROT_READ | PROT_WRITE,
+		MAP_SHARED,
+		file_descriptor,
+		0
+	);
+
+	if (ptr == MAP_FAILED) {
+		::close(file_descriptor);
+
+		return _fail(
+			ERR_CANT_OPEN,
+			vformat(
+				"SharedMemory.open(): mmap failed (%s).",
+				strerror(errno)
+			)
+		);
+	}
+
+	::close(file_descriptor);
+
+	os_ptr = ptr;
+
 	return OK;
 }
 
@@ -122,9 +217,16 @@ void SharedMemory::_close_os() {
 		os_ptr = nullptr;
 	}
 
-	if (status == STATUS_CREATED) {
-		String posix_name = "/" + name;
-		::shm_unlink(posix_name.utf8().get_data());
-	}
+}
 
+void SharedMemory::_unlink_os() {
+	String posix_name = "/" + String(name);
+	
+	if (::shm_unlink(posix_name.utf8().get_data()) == -1 && errno != ENOENT) {
+		ERR_PRINT(vformat(
+			"SharedMemory::unlink(): falied to unlink %s (%s).",
+			posix_name,
+			strerror(errno)
+		));
+	}
 }
