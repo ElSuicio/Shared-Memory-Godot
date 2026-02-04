@@ -23,22 +23,7 @@ limitations under the License.
 using namespace godot;
 
 uint64_t SharedMemory::_get_mapped_size_os() const {
-	if (!os_ptr || !os_handle) {
-		ERR_PRINT("SharedMemory.get_mapped_size(): unmapped memory.");
-		return 0;
-	}
-
-	MEMORY_BASIC_INFORMATION mbi;
-	if (VirtualQuery(os_ptr, &mbi, sizeof(mbi))) {
-		return mbi.RegionSize;
-	}
-
-	ERR_PRINT(vformat(
-		"SharedMemory.get_mapped_size(): VirtualQuery failed (Windows error %d).",
-		(int)GetLastError()
-	));
-
-	return 0;
+	return mapped_size;
 }
 
 Error SharedMemory::_create_os(const StringName& p_name, const int64_t p_size, const int64_t p_scope) {
@@ -104,6 +89,22 @@ Error SharedMemory::_create_os(const StringName& p_name, const int64_t p_size, c
 		);
 	}
 
+	MEMORY_BASIC_INFORMATION mbi;
+	if (!VirtualQuery(ptr, &mbi, sizeof(mbi))) {
+		UnmapViewOfFile(ptr);
+		CloseHandle(hmap);
+
+		return _fail(
+			ERR_CANT_CREATE,
+			vformat(
+				"SharedMemory.create(): VirtualQuery failed (Windows error %d).",
+				(int)GetLastError()
+			)
+		);
+	}
+
+	mapped_size = mbi.RegionSize;
+
 	os_handle = hmap;
 	os_ptr = ptr;
 
@@ -150,7 +151,7 @@ Error SharedMemory::_open_os(const StringName& p_name, int64_t& p_size) {
 		FILE_MAP_ALL_ACCESS,
 		0,
 		0,
-		p_size
+		0
 	);
 
 	if (!ptr) {
@@ -164,12 +165,43 @@ Error SharedMemory::_open_os(const StringName& p_name, int64_t& p_size) {
 		);
 	}
 
+	MEMORY_BASIC_INFORMATION mbi;
+	if (!VirtualQuery(ptr, &mbi, sizeof(mbi))) {
+		UnmapViewOfFile(ptr);
+		CloseHandle(hmap);
+
+		return _fail(
+			ERR_CANT_OPEN,
+			vformat(
+				"SharedMemory.open(): VirtualQuery failed (Windows error %d).",
+				(int)GetLastError()
+			)
+		);
+	}
+
+	mapped_size = mbi.RegionSize;
+
+	if (mapped_size <= 0) {
+		UnmapViewOfFile(ptr);
+		CloseHandle(hmap);
+
+		return _fail(
+			ERR_INVALID_DATA,
+			"SharedMemory.open(): shared memory size is invalid."
+		);
+	}
+
 	if (p_size == 0) {
-		// Returns the actual size of the mapped area.
-		MEMORY_BASIC_INFORMATION mbi;
-		if (VirtualQuery(ptr, &mbi, sizeof(mbi))) {
-			p_size = mbi.RegionSize;
-		}
+		p_size = mapped_size;
+	}
+	else if (p_size > mapped_size) {
+		UnmapViewOfFile(ptr);
+		CloseHandle(hmap);
+
+		return _fail(
+			ERR_INVALID_PARAMETER,
+			"SharedMemory.open(): requested size exceeds shared memory size."
+		);
 	}
 
 	os_handle = hmap;
