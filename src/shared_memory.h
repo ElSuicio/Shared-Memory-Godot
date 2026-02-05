@@ -31,8 +31,7 @@ namespace godot {
 			STATUS_UNINITIALIZED = 0,
 			STATUS_CREATED = 1,
 			STATUS_OPEN = 2,
-			STATUS_CLOSED = 3,
-			STATUS_ERROR = 4
+			STATUS_ERROR = 3
 		};
 
 		enum Scope {

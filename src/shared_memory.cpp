@@ -32,7 +32,6 @@ void SharedMemory::_bind_methods() {
 	ClassDB::bind_integer_constant("SharedMemory", "Status", "STATUS_UNINITIALIZED", STATUS_UNINITIALIZED, false);
 	ClassDB::bind_integer_constant("SharedMemory", "Status", "STATUS_CREATED", STATUS_CREATED, false);
 	ClassDB::bind_integer_constant("SharedMemory", "Status", "STATUS_OPEN", STATUS_OPEN, false);
-	ClassDB::bind_integer_constant("SharedMemory", "Status", "STATUS_CLOSED", STATUS_CLOSED, false);
 	ClassDB::bind_integer_constant("SharedMemory", "Status", "STATUS_ERROR", STATUS_ERROR, false);
 
 	ClassDB::bind_integer_constant("SharedMemory", "Scope", "LOCAL_SCOPE", LOCAL_SCOPE, false);
@@ -241,7 +240,7 @@ Error SharedMemory::write(const PackedByteArray& p_data, const int64_t p_offset)
 void SharedMemory::close() {
 	if (status == STATUS_CREATED || status == STATUS_OPEN) {
 		_close_os();
-		status = STATUS_CLOSED;
+		status = STATUS_UNINITIALIZED;
 	}
 
 	name = StringName();
