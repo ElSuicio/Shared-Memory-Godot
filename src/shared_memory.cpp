@@ -108,6 +108,7 @@ Error SharedMemory::create(const StringName& p_name, const int64_t p_size, const
 	}
 
 	name = p_name;
+	original_name = p_name;
 	size = p_size;
 
 	status = STATUS_CREATED;
@@ -141,6 +142,7 @@ Error SharedMemory::open(const StringName& p_name, int64_t p_size) {
 	}
 
 	name = p_name;
+	original_name = p_name;
 	size = p_size;
 
 	status = STATUS_OPEN;
@@ -250,7 +252,8 @@ void SharedMemory::close() {
 }
 
 void SharedMemory::unlink() {
-	if (status == STATUS_CREATED || status == STATUS_OPEN) {
+	if (!original_name.is_empty()) {
 		_unlink_os();
 	}
+	original_name = StringName();
 }

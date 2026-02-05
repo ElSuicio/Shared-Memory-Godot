@@ -220,13 +220,6 @@ void SharedMemory::_close_os() {
 }
 
 void SharedMemory::_unlink_os() {
-	String posix_name = "/" + String(name);
-	
-	if (::shm_unlink(posix_name.utf8().get_data()) == -1 && errno != ENOENT) {
-		ERR_PRINT(vformat(
-			"SharedMemory::unlink(): falied to unlink %s (%s).",
-			posix_name,
-			strerror(errno)
-		));
-	}
+	String posix_name = "/" + String(original_name);
+	::shm_unlink(posix_name.utf8().get_data());
 }

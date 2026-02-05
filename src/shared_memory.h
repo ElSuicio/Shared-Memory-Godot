@@ -40,6 +40,7 @@ namespace godot {
 		};
 
 		StringName name;
+		StringName original_name;
 		uint64_t size = 0;
 		uint64_t mapped_size = 0;
 		uint8_t status = STATUS_UNINITIALIZED;
