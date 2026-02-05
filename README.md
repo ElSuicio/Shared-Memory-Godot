@@ -11,15 +11,19 @@ This is an addon for **Godot 4.4+** that adds the `SharedMemory` class for creat
 # Godot Shared Memory Example.
 extends Node
 
+const NAME : String = "SharedMemoryExample"
+const SIZE : int = 1024
+
 func _ready() -> void:
 	var shm : SharedMemory = SharedMemory.new()
 
-    if shm.create("SharedMemoryExample", 1024, SharedMemory.LOCAL_SCOPE) == OK:
-        shm.write(("Hello world from Godot Shared Memory!").to_utf8_buffer())
-
-    await get_tree().create_timer(60).timeout
+	if shm.create(NAME, SIZE, SharedMemory.LOCAL_SCOPE) == OK:
+		shm.write(("Hello world from Godot Shared Memory!").to_utf8_buffer())
+	
+	await get_tree().create_timer(10).timeout
 	
 	shm.close()
+	shm.unlink()
 ```
 #### Read (Python):
 ```python
@@ -67,8 +71,8 @@ def main() -> None:
 
     time.sleep(10)
 
-    shm.unlink()
     shm.close()
+	shm.unlink()
 
 if __name__ == "__main__":
     main()
@@ -77,6 +81,9 @@ if __name__ == "__main__":
 ``` gdscript
 # Godot Shared Memory Example.
 extends Node
+
+const NAME : String = "SharedMemoryExample"
+const SIZE : int = 1024
 
 func rstrip(buffer : PackedByteArray) -> PackedByteArray:
 	var out : PackedByteArray = buffer.duplicate()
@@ -89,7 +96,7 @@ func rstrip(buffer : PackedByteArray) -> PackedByteArray:
 func _ready() -> void:
 	var shm : SharedMemory = SharedMemory.new()
 	
-	if shm.open("SharedMemoryExample", 1024) == OK:
+	if shm.open(NAME, SIZE) == OK:
 		var buffer : PackedByteArray = shm.read()
 		buffer = rstrip(buffer)
 		print(buffer.get_string_from_utf8())
