@@ -12,6 +12,8 @@ platform_sources = []
 
 if env["platform"] == "windows":
     platform_sources += Glob("src/*_windows.cpp")
+elif env["platform"] == "linux":
+    platform_sources += Glob("src/*_posix.cpp")
 
 sources = []
 
@@ -19,6 +21,9 @@ for source in common_sources:
     filename = str(source)
 
     if filename.endswith("_windows.cpp"):
+        continue
+    
+    if filename.endswith("_posix.cpp"):
         continue
         
     sources.append(source)
