@@ -97,9 +97,9 @@ func _ready() -> void:
 	var shm : SharedMemory = SharedMemory.new()
 	
 	if shm.open(NAME, SIZE) == OK:
-		var buffer : PackedByteArray = shm.read()
-		buffer = rstrip(buffer)
-		print(buffer.get_string_from_utf8())
+		var data : PackedByteArray = shm.read()
+		data = rstrip(data)
+		print(data.get_string_from_utf8())
 	
 	shm.close()
 ```
