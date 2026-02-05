@@ -5,7 +5,7 @@
 	</brief_description>
 	<description>
 		[SharedMemory] is an [b]IPC[/b] mechanism that lets two or more processes access the same memory segment concurrently. A segment created by one process can be read and written by other processes. Any change becomes immediately visible to all processes that share the segment.
-		[b]Note:[/b] [SharedMemory] does not provide synchronization methods or automatic cleanup. You must synchronize concurrent access to prevent race conditions. To avoid persistent shared memory segments, call [method unlink] before [method close]. On Windows, shared memory is released when all handles are closed.
+		[b]Note:[/b] [SharedMemory] does not provide synchronization methods or automatic cleanup. You must synchronize concurrent access to prevent race conditions. To avoid persistent shared memory segments, call [method unlink] at some point during the segment lifetime. On Windows, shared memory is released when all handles are closed.
 	</description>
 	<tutorials>
 	</tutorials>
@@ -13,9 +13,7 @@
 		<method name="close">
 			<return type="void" />
 			<description>
-				Resets the internal shared memory state and closes the local handle.
-				This method invalidates the memory pointer and clears the segment name.
-				It should be called after [method unlink] to avoid persistent shared memory segments.
+				Resets the internal shared memory state and closes the local handle. This method invalidates the memory pointer and clears the segment name.
 			</description>
 		</method>
 		<method name="create">
@@ -79,7 +77,6 @@
 			<description>
 				Requests removal of the shared memory segment.
 				The segment is removed only after no process holds an open handle to it.
-				This method must be called before [method close], while the segment name is still valid.
 				On Windows, this method has no effect and memory is released when all handles are closed.
 			</description>
 		</method>
