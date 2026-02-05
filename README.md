@@ -24,13 +24,22 @@ func _ready() -> void:
 #### Read (Python):
 ```python
 # Python Shared Memory Example.
-import mmap
+from multiprocessing import shared_memory
+from multiprocessing import resource_tracker
 
+NAME : str = "SharedMemoryExample"
 SIZE : int = 1024
 
-def main():
-    mm = mmap.mmap(-1, SIZE, tagname="SharedMemoryExample")
-    print(mm[:].rstrip(b'\x00'))
+def main() -> None:
+    shm : shared_memory.SharedMemory = shared_memory.SharedMemory(name = NAME, create = False, size = SIZE)
+    
+    resource_tracker.unregister(shm._name, 'shared_memory')
+    
+    data : bytes = bytes(shm.buf[:]).rstrip(b'\x00')
+
+    print(data.decode("utf-8"))
+
+    shm.close()
 
 if __name__ == "__main__":
     main()
@@ -43,18 +52,23 @@ Hello world from Godot Shared Memory!
 ##### Write (Python -> Godot):
 ``` python
 # Python Shared Memory Example.
-import mmap
+from multiprocessing import shared_memory
 import time
 
-SIZE = 1024
+NAME : str = "SharedMemoryExample"
+SIZE : int = 1024
 
-def main():
-    mm = mmap.mmap(-1, SIZE, tagname="SharedMemoryExample")
+def main() -> None:
+    shm : shared_memory.SharedMemory = shared_memory.SharedMemory(name = NAME, create = True, size = SIZE)
 
-    mm.seek(0)
-    mm.write(b"Hello world from Python Shared Memory!")
+    data : bytes = b'Hello world from Python Shared Memory!'
 
-    time.sleep(60)
+    shm.buf[0:len(data)] = data
+
+    time.sleep(10)
+
+    shm.unlink()
+    shm.close()
 
 if __name__ == "__main__":
     main()
