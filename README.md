@@ -142,22 +142,24 @@ From the repository root, run:
 Basic build (default generator)
 
 ```bash
-cmake -S ./ -B build -A <architecture> -DGODOTCPP_TARGET=<target choice>
+cmake -S ./ -B build -DGODOTCPP_TARGET=<target choice>
 cmake --build build
 ```
 
 Example:
 ```bash
-cmake -S ./ -B build -A x64 -DGODOTCPP_TARGET=template_debug
+cmake -S ./ -B build -DGODOTCPP_TARGET=template_debug
 cmake --build build
 ```
 
 Multi-config generators:
 ```bash
 # Debug
+cmake -S ./ -B build -A x64 -DGODOTCPP_TARGET=template_debug
 cmake --build build --config Debug
 
 # Release
+cmake -S ./ -B build -A x64 -DGODOTCPP_TARGET=template_release
 cmake --build build --config Release
 ```
 
