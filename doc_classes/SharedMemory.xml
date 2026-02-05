@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="SharedMemory" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
 	<brief_description>
-		
+		Class that allocates and manages shared memory accessible by one or more processes.
 	</brief_description>
 	<description>
-		
+		[SharedMemory] is an [b]IPC[/b] mechanism that lets two or more processes access the same memory segment concurrently. A segment created by one process can be read and written by other processes. Any change becomes immediately visible to all processes that share the segment.
+		[b]Note:[/b] [SharedMemory] does not provide synchronization methods or automatic cleanup. You must synchronize concurrent access to prevent race conditions. To avoid persistent shared memory segments, call [method unlink] before [method close]. On Windows, shared memory is released when all handles are closed.
 	</description>
 	<tutorials>
 	</tutorials>
@@ -12,7 +13,9 @@
 		<method name="close">
 			<return type="void" />
 			<description>
-				
+				Resets the internal shared memory state and closes the local handle.
+				This method invalidates the memory pointer and clears the segment name.
+				It should be called after [method unlink] to avoid persistent shared memory segments.
 			</description>
 		</method>
 		<method name="create">
@@ -21,31 +24,34 @@
 			<param index="1" name="size" type="int" />
 			<param index="2" name="scope" type="int" default="0" />
 			<description>
-				
+				Creates a new shared memory segment with the given [param name], [param size], and [param scope].
+				Returns an [enum Error] code if the segment already exists or if creation fails.
 			</description>
 		</method>
 		<method name="get_mapped_size" qualifiers="const">
 			<return type="int" />
 			<description>
-				
+				Returns the actual mapped size of the shared memory segment in bytes.
+				Some platforms allocate memory segments based on page size; the memory segment may be greater than or equal to the requested size.
 			</description>
 		</method>
 		<method name="get_name" qualifiers="const">
 			<return type="StringName" />
 			<description>
-				
+				Returns the unique name of the shared memory segment.
 			</description>
 		</method>
 		<method name="get_size" qualifiers="const">
 			<return type="int" />
 			<description>
-				
+				Returns the size of the shared memory segment in bytes.
 			</description>
 		</method>
 		<method name="get_status" qualifiers="const">
 			<return type="int" />
 			<description>
-				
+				Returns the current status of the shared memory instance.
+				See [enum Status] for possible values.
 			</description>
 		</method>
 		<method name="open">
@@ -53,15 +59,28 @@
 			<param index="0" name="name" type="StringName" />
 			<param index="1" name="size" type="int" default="0" />
 			<description>
-				
+				Opens an existing shared memory segment identified by [param name].
+				If [param size] is zero, the system-mapped size of the segment is used.
+				Returns an [enum Error] code if the segment cannot be opened.
 			</description>
 		</method>
 		<method name="read" qualifiers="const">
 			<return type="PackedByteArray" />
-			<param index="0" name="size" type="int" />
+			<param index="0" name="size" type="int" default="0" />
 			<param index="1" name="offset" type="int" default="0" />
 			<description>
-				
+				Reads data from the shared memory segment starting at [param offset].
+				If [param size] is zero, reads until the end of the segment.
+				Returns the read data as a [PackedByteArray].
+			</description>
+		</method>
+		<method name="unlink">
+			<return type="void" />
+			<description>
+				Requests removal of the shared memory segment.
+				The segment is removed only after no process holds an open handle to it.
+				This method must be called before [method close], while the segment name is still valid.
+				On Windows, this method has no effect and memory is released when all handles are closed.
 			</description>
 		</method>
 		<method name="write">
@@ -69,31 +88,29 @@
 			<param index="0" name="data" type="PackedByteArray" />
 			<param index="1" name="offset" type="int" default="0" />
 			<description>
-				
+				Writes [param data] to the shared memory segment starting at [param offset].
+				Returns an [enum Error] code if the write exceeds the segment bounds.
 			</description>
 		</method>
 	</methods>
 	<constants>
 		<constant name="STATUS_UNINITIALIZED" value="0" enum="Status">
-			
+			The initial status of the [SharedMemory]. This is also the status after closing the shared memory segment.
 		</constant>
 		<constant name="STATUS_CREATED" value="1" enum="Status">
-			
+			A status representing a [SharedMemory] that is created.
 		</constant>
 		<constant name="STATUS_OPEN" value="2" enum="Status">
-			
-		</constant>
-		<constant name="STATUS_CLOSED" value="3" enum="Status">
-			
+			A status representing a [SharedMemory] that is opened.
 		</constant>
 		<constant name="STATUS_ERROR" value="4" enum="Status">
-			
+			A status representing a [SharedMemory] in an error state.
 		</constant>
 		<constant name="LOCAL_SCOPE" value="0" enum="Scope">
-			
+			A scope representing a local namespace for the shared memory segment.
 		</constant>
 		<constant name="GLOBAL_SCOPE" value="1" enum="Scope">
-			
+			A scope representing a global namespace for the shared memory segment.
 		</constant>
 	</constants>
 </class>
