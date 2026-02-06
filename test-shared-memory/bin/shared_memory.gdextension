@@ -1,17 +1,25 @@
 [configuration]
 
 entry_symbol = "library_init"
-compatibility_minimum = "4.3"
-reloadable = true
+compatibility_minimum = "4.4"
+reloadable = false
 
 [libraries]
 
-windows.debug.x86_64 = "./windows/shared_memory.windows.template_debug.x86_64.dll"
+windows.editor.x86_32 = "./windows/shared_memory.windows.editor.x86_32.dll"
 windows.editor.x86_64 = "./windows/shared_memory.windows.editor.x86_64.dll"
-windows.release.x86_64 = "./windows/shared_memory.windows.template_release.x86_64.dll"
 
 windows.debug.x86_32 = "./windows/shared_memory.windows.template_debug.x86_32.dll"
-windows.editor.x86_32 = "./windows/shared_memory.windows.editor.x86_32.dll"
-windows.release.x86_32 = "./windows/shared_memory.windows.template_release.x86_32.dll"
+windows.debug.x86_64 = "./windows/shared_memory.windows.template_debug.x86_64.dll"
 
+windows.release.x86_32 = "./windows/shared_memory.windows.template_release.x86_32.dll"
+windows.release.x86_64 = "./windows/shared_memory.windows.template_release.x86_64.dll"
+
+linux.editor.x86_32 = "./linux/shared_memory.linux.editor.x86_32.so"
+linux.editor.x86_64 = "./linux/shared_memory.linux.editor.x86_64.so"
+
+linux.debug.x86_32 = "./linux/shared_memory.linux.template_debug.x86_32.so"
 linux.debug.x86_64 = "./linux/shared_memory.linux.template_debug.x86_64.so"
+
+linux.release.x86_32 = "./linux/shared_memory.linux.template_release.x86_32.so"
+linux.release.x86_64 = "./linux/shared_memory.linux.template_release.x86_64.so"
