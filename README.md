@@ -35,15 +35,15 @@ NAME : str = "SharedMemoryExample"
 SIZE : int = 1024
 
 def main() -> None:
-    shm : shared_memory.SharedMemory = shared_memory.SharedMemory(name = NAME, create = False, size = SIZE)
+	shm : shared_memory.SharedMemory = shared_memory.SharedMemory(name = NAME, create = False, size = SIZE)
     
-    resource_tracker.unregister(shm._name, 'shared_memory')
+	resource_tracker.unregister(shm._name, 'shared_memory')
     
-    data : bytes = bytes(shm.buf[:]).rstrip(b'\x00')
+	data : bytes = bytes(shm.buf[:]).rstrip(b'\x00')
 
-    print(data.decode("utf-8"))
+	print(data.decode("utf-8"))
 
-    shm.close()
+	shm.close()
 
 if __name__ == "__main__":
     main()
@@ -63,15 +63,15 @@ NAME : str = "SharedMemoryExample"
 SIZE : int = 1024
 
 def main() -> None:
-    shm : shared_memory.SharedMemory = shared_memory.SharedMemory(name = NAME, create = True, size = SIZE)
+	shm : shared_memory.SharedMemory = shared_memory.SharedMemory(name = NAME, create = True, size = SIZE)
 
-    data : bytes = b'Hello world from Python Shared Memory!'
+	data : bytes = b'Hello world from Python Shared Memory!'
 
-    shm.buf[0:len(data)] = data
+	shm.buf[0:len(data)] = data
 
-    time.sleep(10)
+	time.sleep(10)
 
-    shm.close()
+	shm.close()
 	shm.unlink()
 
 if __name__ == "__main__":
