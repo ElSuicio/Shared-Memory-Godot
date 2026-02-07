@@ -1,7 +1,7 @@
 import os
 import sys
 
-lib_name = "shared_memory"
+lib_name = "SharedMemory"
 project_dir = "test-shared-memory"
 
 env = SConscript("third_party/godot-cpp/SConstruct")
@@ -38,7 +38,15 @@ if env["target"] in ["editor", "template_debug"]:
     except AttributeError:
         print("Not including class reference as we're targeting a pre-4.3 baseline.")
 
-suffix = env['suffix'].replace(".dev", "").replace(".universal", "")
+suffix = env["suffix"].replace(".dev", "").replace(".universal", "")
+
+suffix = suffix.replace(".double", "").replace(".single", "")
+
+elements = suffix.split(".")
+arch = elements.pop()
+prefix = (".").join(elements)
+
+suffix = f"{prefix}.{env["precision"]}.{arch}"
 
 lib_filename = "{}{}{}{}".format(env.subst('$SHLIBPREFIX'), lib_name, suffix, env.subst('$SHLIBSUFFIX'))
 

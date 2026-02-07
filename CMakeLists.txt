@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-set(LIBRARY_NAME "shared_memory")
+set(LIBRARY_NAME "SharedMemory")
 set(GODOT_PROJECT_DIR "test-shared-memory")
 
 project(
@@ -61,8 +61,6 @@ set_target_properties(${LIBRARY_NAME}
             "$<1:${PROJECT_SOURCE_DIR}/bin/${GODOTCPP_PLATFORM}>"
         LIBRARY_OUTPUT_DIRECTORY
             "$<1:${PROJECT_SOURCE_DIR}/bin/${GODOTCPP_PLATFORM}>"
-        PREFIX
-            ""
         OUTPUT_NAME
             "${LIBRARY_NAME}${GODOTCPP_SUFFIX}"
 )

@@ -119,12 +119,12 @@ Hello world from Python Shared Memory!
 #### Build with SCons
 From the repository root, run:
 ```bash
-scons platform=<platform> target=<target> arch=<architecture>
+scons platform=<platform> target=<target> precision=<precision> arch=<architecture>
 ```
 
 Example:
 ```bash
-scons platform=windows target=template_debug arch=x86_64
+scons platform=windows target=template_debug precision=single arch=x86_64
 ```
 
 #### Build with CMake

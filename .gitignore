@@ -16,6 +16,7 @@ __pycache__/
 *.ilk
 *.pdb
 *.so
+*.os
 *.bat
 
 # Visual Studio
