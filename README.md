@@ -53,7 +53,7 @@ if __name__ == "__main__":
 Hello world from Godot Shared Memory!
 ```
 
-##### Write (Python -> Godot):
+##### Write (Python → Godot):
 ``` python
 # Python Shared Memory Example.
 from multiprocessing import shared_memory
