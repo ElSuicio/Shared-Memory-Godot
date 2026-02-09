@@ -3,7 +3,10 @@
 >
 > This addon does not provide synchronization methods. Concurrent access must be coordinated by the user.
 
-This is an addon for **Godot 4.4+** that adds the `SharedMemory` class for creating, opening, and directly accessing shared memory segments for **inter-process communication (IPC)**.
+This is an addon for **Godot 4.4+** that adds the `SharedMemory` class for creating, opening and directly accessing shared memory segments for **inter-process communication (IPC)**.
+
+### Binary downloads
+The official binaries for Godot can be found on [my itch.io page](https://interdreamsoft.itch.io/shared-memory).
 
 ### How to use
 #### Write (Godot → Python):
