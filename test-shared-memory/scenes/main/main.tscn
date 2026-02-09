@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://bal5btwrq2l3w"]
+
+[ext_resource type="Script" uid="uid://535gl8ek40wb" path="res://scripts/main/main.gd" id="1_iuonh"]
+[ext_resource type="Script" uid="uid://smy8xf4yt45e" path="res://addons/state_machine/StateMachine.gd" id="2_k2fmo"]
+[ext_resource type="Script" uid="uid://bt2m0r2bix8oa" path="res://scripts/main/states/main_state_init.gd" id="3_k2fmo"]
+[ext_resource type="Script" uid="uid://d3ruipj722lph" path="res://scripts/main/states/main_state_wait.gd" id="4_l3cfh"]
+
+[node name="Main" type="Node" unique_id=1806278708]
+script = ExtResource("1_iuonh")
+_PythonInterpreterPath = "res://python/.venv/Scripts/python"
+_PythonScriptPath = "res://python/src/main.py"
+_ShmName = "SharedMemoryExample"
+_ShmSize = 1024
+_TcpAddress = "127.0.0.1"
+_TcpPort = 8080
+
+[node name="StateMachine" type="Node" parent="." unique_id=1452256966 node_paths=PackedStringArray("default_state")]
+script = ExtResource("2_k2fmo")
+default_state = NodePath("Init")
+
+[node name="Init" type="Node" parent="StateMachine" unique_id=905455030]
+script = ExtResource("3_k2fmo")
+
+[node name="Wait" type="Node" parent="StateMachine" unique_id=258362811]
+script = ExtResource("4_l3cfh")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=451935385]
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 3
