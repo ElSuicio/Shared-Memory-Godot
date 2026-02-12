@@ -6,7 +6,7 @@
 This is an addon for **Godot 4.4+** that adds the `SharedMemory` class for creating, opening and directly accessing shared memory segments for **inter-process communication (IPC)**.
 
 ### Binary downloads
-The official binaries for Godot can be found on [my itch.io page](https://interdreamsoft.itch.io/shared-memory).
+The official binaries for Godot can be found at [itch.io](https://interdreamsoft.itch.io/shared-memory).
 
 ### How to use
 #### Write (Godot → Python):
