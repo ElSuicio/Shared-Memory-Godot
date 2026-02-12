@@ -4,13 +4,16 @@
 [ext_resource type="Script" uid="uid://smy8xf4yt45e" path="res://addons/state_machine/StateMachine.gd" id="2_k2fmo"]
 [ext_resource type="Script" uid="uid://bt2m0r2bix8oa" path="res://scripts/main/states/main_state_init.gd" id="3_k2fmo"]
 [ext_resource type="Script" uid="uid://d3ruipj722lph" path="res://scripts/main/states/main_state_wait.gd" id="4_l3cfh"]
+[ext_resource type="Script" uid="uid://but5584fdnpe8" path="res://scripts/main/states/main_state_request.gd" id="5_6q06x"]
+[ext_resource type="Script" uid="uid://q5qceudxsfnx" path="res://scripts/main/states/main_state_read.gd" id="6_ow5a4"]
 
-[node name="Main" type="Node" unique_id=1806278708]
+[node name="Main" type="Node" unique_id=1806278708 node_paths=PackedStringArray("_TextureRect")]
 script = ExtResource("1_iuonh")
+_TextureRect = NodePath("TextureRect")
 _PythonInterpreterPath = "res://python/.venv/Scripts/python"
 _PythonScriptPath = "res://python/src/main.py"
 _ShmName = "SharedMemoryExample"
-_ShmSize = 1024
+_ShmSize = 1000000
 _TcpAddress = "127.0.0.1"
 _TcpPort = 8080
 
@@ -23,6 +26,12 @@ script = ExtResource("3_k2fmo")
 
 [node name="Wait" type="Node" parent="StateMachine" unique_id=258362811]
 script = ExtResource("4_l3cfh")
+
+[node name="Request" type="Node" parent="StateMachine" unique_id=1962298250]
+script = ExtResource("5_6q06x")
+
+[node name="Read" type="Node" parent="StateMachine" unique_id=2063754185]
+script = ExtResource("6_ow5a4")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=451935385]
 anchors_preset = 13

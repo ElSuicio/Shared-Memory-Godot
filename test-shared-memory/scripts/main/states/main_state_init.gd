@@ -29,7 +29,7 @@ func start() -> void:
 		main._TcpPort
 	]
 	
-	main.python_pid = start_python(main.python_interpreter_path, main.python_script_path, arguments, true)
+	main.python_pid = start_python(main.python_interpreter_path, main.python_script_path, arguments, false)
 
 func on_process(_delta : float) -> void:
 	if main.tcp_server.is_connection_available():
