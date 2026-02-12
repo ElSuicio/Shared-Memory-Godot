@@ -3,9 +3,9 @@
 [ext_resource type="Script" uid="uid://535gl8ek40wb" path="res://scripts/main/main.gd" id="1_iuonh"]
 [ext_resource type="Script" uid="uid://smy8xf4yt45e" path="res://addons/state_machine/StateMachine.gd" id="2_k2fmo"]
 [ext_resource type="Script" uid="uid://bt2m0r2bix8oa" path="res://scripts/main/states/main_state_init.gd" id="3_k2fmo"]
-[ext_resource type="Script" uid="uid://d3ruipj722lph" path="res://scripts/main/states/main_state_wait.gd" id="4_l3cfh"]
-[ext_resource type="Script" uid="uid://but5584fdnpe8" path="res://scripts/main/states/main_state_request.gd" id="5_6q06x"]
-[ext_resource type="Script" uid="uid://q5qceudxsfnx" path="res://scripts/main/states/main_state_read.gd" id="6_ow5a4"]
+[ext_resource type="Script" uid="uid://bvmvr31006sgv" path="res://scripts/main/states/main_state_process_and_request.gd" id="6_ow5a4"]
+[ext_resource type="Script" uid="uid://bw0dilcig0s6e" path="res://scripts/main/states/main_state_wait_connection.gd" id="7_hujxm"]
+[ext_resource type="Script" uid="uid://hcp0cscaqhb5" path="res://scripts/main/states/main_state_wait_environment.gd" id="8_yyfjg"]
 
 [node name="Main" type="Node" unique_id=1806278708 node_paths=PackedStringArray("_TextureRect")]
 script = ExtResource("1_iuonh")
@@ -24,13 +24,13 @@ default_state = NodePath("Init")
 [node name="Init" type="Node" parent="StateMachine" unique_id=905455030]
 script = ExtResource("3_k2fmo")
 
-[node name="Wait" type="Node" parent="StateMachine" unique_id=258362811]
-script = ExtResource("4_l3cfh")
+[node name="WaitConnection" type="Node" parent="StateMachine" unique_id=1489819497]
+script = ExtResource("7_hujxm")
 
-[node name="Request" type="Node" parent="StateMachine" unique_id=1962298250]
-script = ExtResource("5_6q06x")
+[node name="WaitEnvironment" type="Node" parent="StateMachine" unique_id=1602335138]
+script = ExtResource("8_yyfjg")
 
-[node name="Read" type="Node" parent="StateMachine" unique_id=2063754185]
+[node name="ProcessAndRequest" type="Node" parent="StateMachine" unique_id=1906653893]
 script = ExtResource("6_ow5a4")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=451935385]

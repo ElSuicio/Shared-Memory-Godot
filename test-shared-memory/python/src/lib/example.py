@@ -10,7 +10,7 @@ from math import e as E
 
 import numpy as np
 
-fig : plt.figure = plt.figure(dpi = 80)
+fig : plt.figure = plt.figure(dpi = 100)
 ax = Subplot(fig, 111)
 
 fig.add_subplot(ax)

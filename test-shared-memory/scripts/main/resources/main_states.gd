@@ -3,6 +3,6 @@ extends Resource
 class_name MainStates
 
 const INIT : StringName = "Init" ##
-const WAIT : StringName = "Wait" ##
-const REQUEST : StringName = "Request" ##
-const READ : StringName = "Read" ##
+const WAIT_CONNECTION : StringName = "WaitConnection" ##
+const WAIT_ENVIRONMENT : StringName = "WaitEnvironment" ##
+const PROCESS_AND_REQUEST : StringName = "ProcessAndRequest" ##

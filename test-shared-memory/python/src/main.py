@@ -8,7 +8,14 @@ from typing import Any
 
 from multiprocessing import shared_memory
 
+from enum import IntEnum
+
 import lib.example as example
+
+class MainCommands(IntEnum):
+    ENVIRONMENT_READY = 0x00
+    REQUEST_BUFFER = 0x01
+    BUFFER_READY = 0x02
 
 NAME : str = "SharedMemoryExample"
 SIZE : int = 1024
@@ -20,6 +27,7 @@ def main() -> None:
     raw : bytes = base64.b64decode(sys.argv[1])
     args : list[Any] = json.loads(raw.decode("utf-8"))
     
+    # Open shared memory.
     shm : shared_memory.SharedMemory = shared_memory.SharedMemory(name = args[0], create = False, size = args[1])
 
     if os.name != "nt":
@@ -29,10 +37,12 @@ def main() -> None:
         except Exception:
             pass
 
+    # Connect to the TCP server.
     tcp : socket.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     tcp.connect((args[2], args[3]))
 
-    tcp.send(b'\x00')
+    # Environment is ready:
+    tcp.send(bytes([MainCommands.ENVIRONMENT_READY]))
 
     while True:
         try:
@@ -41,16 +51,14 @@ def main() -> None:
             if not data:
                 break
 
-            match data:
-                case b'\x01':
-                    buffer : bytes = example.get_png()
+            if data == bytes([MainCommands.REQUEST_BUFFER]):
+                buffer : bytes = example.get_png()
+                size : int = len(buffer)
                     
-                    size : int = len(buffer)
-                    
-                    shm.buf[0:8] = size.to_bytes(8, "little")
-                    shm.buf[8:8+size] = buffer
+                shm.buf[0:8] = size.to_bytes(8, "little")
+                shm.buf[8:8+size] = buffer
 
-                    tcp.send(b'\x01')
+                tcp.send(bytes([MainCommands.BUFFER_READY]))
             
         except ConnectionError:
             break

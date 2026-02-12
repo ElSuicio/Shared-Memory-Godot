@@ -19,8 +19,6 @@ func start() -> void:
 	main.python_interpreter_path = ProjectSettings.globalize_path(main._PythonInterpreterPath)
 	main.python_script_path = ProjectSettings.globalize_path(main._PythonScriptPath)
 	
-	await get_tree().create_timer(0.5).timeout
-	
 	# Start Python: 
 	var arguments : Array = [
 		main._ShmName,
@@ -30,12 +28,6 @@ func start() -> void:
 	]
 	
 	main.python_pid = start_python(main.python_interpreter_path, main.python_script_path, arguments, false)
-
-func on_process(_delta : float) -> void:
-	if main.tcp_server.is_connection_available():
-		main.tcp = main.tcp_server.take_connection()
-		self.state_machine.change_to(MainStates.WAIT)
-
-func end() -> void:
-	main.shm.unlink()
-	main.tcp_server.stop()
+	
+	# Change state (wait connection):
+	self.state_machine.change_to(MainStates.WAIT_CONNECTION)
