@@ -6,7 +6,11 @@ func start_python(interpreter_path : String, script_path : String, arguments : A
 	var payload : PackedByteArray = JSON.stringify(arguments).to_utf8_buffer()
 	var encoded : String = Marshalls.raw_to_base64(payload)
 	
+	# Editor only:
 	return OS.create_process(interpreter_path, [script_path, encoded], open_console)
+	
+	# Export only:
+	#return OS.create_process(interpreter_path, [encoded], open_console)
 
 func start() -> void:
 	main.shm = SharedMemory.new()
@@ -19,6 +23,9 @@ func start() -> void:
 	main.python_interpreter_path = ProjectSettings.globalize_path(main._PythonInterpreterPath)
 	main.python_script_path = ProjectSettings.globalize_path(main._PythonScriptPath)
 	
+	# Export only:
+	#main.python_executable_path = ProjectSettings.globalize_path(main._PythonExecutablePath)
+	
 	# Start Python: 
 	var arguments : Array = [
 		main._ShmName,
@@ -27,7 +34,11 @@ func start() -> void:
 		main._TcpPort
 	]
 	
+	# Editor only:
 	main.python_pid = start_python(main.python_interpreter_path, main.python_script_path, arguments, false)
+	
+	# Export only:
+	#main.python_pid = start_python(main.python_executable_path, "", arguments, false)
 	
 	# Change state (wait connection):
 	self.state_machine.change_to(MainStates.WAIT_CONNECTION)

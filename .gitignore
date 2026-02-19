@@ -5,6 +5,7 @@
 
 # Python specific ignores
 __pycache__/
+dist/
 .venv/
 
 # Binaries
@@ -19,9 +20,11 @@ __pycache__/
 *.os
 *.bat
 
-# Visual Studio
+# Visual Studio specific ignores
 .vs
 .vscode
 .cache
 out/
+
+# Other
 build/
