@@ -43,7 +43,7 @@ Error SharedMemory::_create_os(const StringName& p_name, const int64_t p_size, c
     int file_descriptor = ::shm_open(
         posix_name.utf8().get_data(),
         O_CREAT | O_EXCL | O_RDWR,
-        0600
+        S_IRUSR | S_IWUSR
     );
 
     if (file_descriptor == -1) {
@@ -127,7 +127,7 @@ Error SharedMemory::_open_os(const StringName& p_name, int64_t& p_size) {
 	int file_descriptor = ::shm_open(
         posix_name.utf8().get_data(),
         O_RDWR,
-        0600
+        S_IRUSR | S_IWUSR
     );
 
 	if (file_descriptor == -1) {
