@@ -19,12 +19,12 @@ limitations under the License.
 
 #pragma once
 
-#include <godot_cpp/classes/object.hpp>
+#include <godot_cpp/classes/ref_counted.hpp>
 
 namespace godot {
 
-	class SharedMemory : public Object {
-		GDCLASS(SharedMemory, Object)
+	class SharedMemory : public RefCounted {
+		GDCLASS(SharedMemory, RefCounted)
 
 	private:
 		enum Status {

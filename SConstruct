@@ -5,7 +5,7 @@ lib_name = "SharedMemory"
 project_dir = "test-shared-memory"
 
 env = SConscript("third_party/godot-cpp/SConstruct")
-env.Append(CPPPATH=["src/"])
+env.Append(CPPPATH=["include/", "src/"])
 
 common_sources = Glob("src/*.cpp")
 platform_sources = []

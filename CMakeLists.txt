@@ -5,7 +5,7 @@ set(GODOT_PROJECT_DIR "test-shared-memory")
 
 project(
     SharedMemory-Godot
-    VERSION 1.0
+    VERSION 1.0.2
     LANGUAGES CXX
     HOMEPAGE_URL https://github.com/ElSuicio/Shared-Memory-Godot
 )
@@ -18,7 +18,7 @@ include(GodotCPPModule)
 get_target_property(GODOTCPP_SUFFIX godot::cpp GODOTCPP_SUFFIX)
 get_target_property(GODOTCPP_PLATFORM godot::cpp GODOTCPP_PLATFORM)
 
-file(GLOB_RECURSE COMMON_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
+file(GLOB_RECURSE COMMON_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
 file(GLOB_RECURSE COMMON_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 list(FILTER COMMON_SOURCES EXCLUDE REGEX "_windows\\.cpp$")

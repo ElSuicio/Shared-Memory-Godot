@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<class name="SharedMemory" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+<class name="SharedMemory" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
 	<brief_description>
 		Class that allocates and manages shared memory accessible by one or more processes.
 	</brief_description>
@@ -100,7 +100,7 @@
 		<constant name="STATUS_OPEN" value="2" enum="Status">
 			A status representing a [SharedMemory] that is opened.
 		</constant>
-		<constant name="STATUS_ERROR" value="4" enum="Status">
+		<constant name="STATUS_ERROR" value="3" enum="Status">
 			A status representing a [SharedMemory] in an error state.
 		</constant>
 		<constant name="LOCAL_SCOPE" value="0" enum="Scope">
