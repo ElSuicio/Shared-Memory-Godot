@@ -19,7 +19,12 @@ dist/
 *.pdb
 *.so
 *.os
+
+# Batch specific ignores
 *.bat
+
+# Bash specific ignores
+*.sh
 
 # Visual Studio specific ignores
 .vs
