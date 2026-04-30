@@ -17,15 +17,196 @@ limitations under the License.
 
 */
 
-#include "shared_memory.h"
+#include "shared_memory.hpp"
 #include <godot_cpp/core/class_db.hpp>
 
 using namespace godot;
 
-Error SharedMemory::_fail(Error p_error, const String& p_message) {
-	status = STATUS_ERROR;
-	ERR_PRINT(p_message);
-	return p_error;
+SharedMemory::SharedMemory() {
+	// Initialize any variables here.
+}
+
+SharedMemory::~SharedMemory() {
+	close();
+}
+
+Error SharedMemory::create(const StringName& p_name, int64_t p_size, int64_t p_scope) {	
+	if (p_name.is_empty()) {
+		return _fail(ERR_INVALID_PARAMETER, "SharedMemory.create(): name cannot be empty.");
+	}
+
+	if (p_size <= 0) {
+		return _fail(ERR_INVALID_PARAMETER, "SharedMemory.create(): size must be greater than zero.");
+	}
+
+	if (get_status() == STATUS_CREATED || get_status() == STATUS_OPEN) {
+		ERR_PRINT("SharedMemory.create(): already created or open.");
+		return ERR_ALREADY_IN_USE;
+	}
+
+	Error error = _create_os(p_name, p_size, p_scope);
+	
+	if (error != OK) {
+		return error;
+	}
+
+	name = p_name;
+	original_name = p_name;
+
+	size = p_size;
+
+	status = STATUS_CREATED;
+
+	return OK;
+}
+
+Error SharedMemory::open(const StringName& p_name, int64_t p_size) {
+	if (p_name.is_empty()) {
+		return _fail(ERR_INVALID_PARAMETER, "SharedMemory.open(): name cannot be empty.");
+	}
+
+	if (p_size < 0) {
+		return _fail(ERR_INVALID_PARAMETER, "SharedMemory.open(): size must not be negative.");
+	}
+
+	if (get_status() == STATUS_CREATED || get_status() == STATUS_OPEN) {
+		ERR_PRINT("SharedMemory.open(): already created or open.");
+		return ERR_ALREADY_IN_USE;
+	}
+
+	int64_t requested_size = p_size;
+	Error error = _open_os(p_name, &requested_size);
+
+	if (error != OK) {
+		return error;
+	}
+
+	name = p_name;
+	original_name = p_name;
+
+	size = requested_size;
+
+	status = STATUS_OPEN;
+
+	return OK;
+}
+
+PackedByteArray SharedMemory::read(int64_t p_size, int64_t p_offset) const {
+	PackedByteArray buffer = PackedByteArray();
+	
+	if (status != STATUS_CREATED && status != STATUS_OPEN) {
+		ERR_PRINT("SharedMemory.read(): invalid state.");
+		return buffer;
+	}
+
+	if (p_offset < 0) {
+		ERR_PRINT("SharedMemory.read(): offset must be greater than or equal to zero.");
+		return buffer;
+	}
+
+	if (p_offset >= size) {
+		ERR_PRINT("SharedMemory.read(): offset out of bounds.");
+		return buffer;
+	}
+
+	if (p_size < 0) {
+		ERR_PRINT("SharedMemory.read(): size must be greater than or equal to zero.");
+		return buffer;
+	}
+
+	if (p_size == 0) {
+		p_size = size - p_offset;
+	}
+	else if (p_offset > size - p_size) {
+		ERR_PRINT("SharedMemory.read(): size out of bounds.");
+		return buffer;
+	}
+
+	buffer.resize(p_size);
+
+	memcpy(
+		buffer.ptrw(),
+		static_cast<const uint8_t*>(os_ptr) + p_offset,
+		p_size
+	);
+
+	return buffer;
+}
+
+Error SharedMemory::write(const PackedByteArray& p_data, int64_t p_offset) {
+	if (status != STATUS_CREATED && status != STATUS_OPEN) {
+		ERR_PRINT("SharedMemory.write(): invalid state.");
+		return ERR_UNCONFIGURED;
+	}
+
+	const int64_t data_size = p_data.size();
+
+	if (data_size <= 0) {
+		ERR_PRINT("SharedMemory.write(): data is empty.");
+		return ERR_INVALID_PARAMETER;
+	}
+
+	if (data_size > size) {
+		ERR_PRINT("SharedMemory.write(): data exceeds shared memory size.");
+		return ERR_INVALID_PARAMETER;
+	}
+
+	if (p_offset < 0) {
+		ERR_PRINT("SharedMemory.write(): offset must be greater than or equal to zero.");
+		return ERR_INVALID_PARAMETER;
+	}
+
+	if (p_offset > size - data_size) {
+		ERR_PRINT("SharedMemory.write(): read exceeds shared memory bounds.");
+		return ERR_INVALID_PARAMETER;
+	}
+
+	memcpy(
+		static_cast<uint8_t*>(os_ptr) + p_offset,
+		p_data.ptr(),
+		data_size
+	);
+
+	return OK;
+}
+
+void SharedMemory::close() {
+	if (status == STATUS_CREATED || status == STATUS_OPEN) {
+		_close_os();
+		status = STATUS_UNINITIALIZED;
+	}
+	name = StringName();
+	size = 0;
+	mapped_size = 0;
+
+}
+
+void SharedMemory::unlink() {
+	if (!original_name.is_empty()) {
+		_unlink_os();
+	}
+	original_name = StringName();
+}
+
+StringName SharedMemory::get_name() const {
+	return name;
+}
+
+uint64_t SharedMemory::get_size() const {
+	return size;
+}
+
+uint64_t SharedMemory::get_mapped_size() const {
+	if (status == STATUS_CREATED || status == STATUS_OPEN) {
+		return _get_mapped_size_os();
+	}
+	
+	ERR_PRINT("SharedMemory.get_mapped_size(): invalid state.");
+	return 0;
+}
+
+uint8_t SharedMemory::get_status() const {
+	return status;
 }
 
 void SharedMemory::_bind_methods() {
@@ -52,208 +233,8 @@ void SharedMemory::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("unlink"), &SharedMemory::unlink);
 }
 
-SharedMemory::SharedMemory() {
-	// Initialize any variables here.
-}
-
-SharedMemory::~SharedMemory() {
-	close();
-}
-
-StringName SharedMemory::get_name() const {
-	return name;
-}
-
-uint64_t SharedMemory::get_size() const {
-	return size;
-}
-
-uint64_t SharedMemory::get_mapped_size() const {
-	if (status == STATUS_CREATED || status == STATUS_OPEN) {
-		return _get_mapped_size_os();
-	}
-	
-	ERR_PRINT("SharedMemory.get_mapped_size(): invalid state.");
-	return 0;
-}
-
-uint8_t SharedMemory::get_status() const {
-	return status;
-}
-
-Error SharedMemory::create(const StringName& p_name, const int64_t p_size, const int64_t p_scope) {	
-	if (p_name.is_empty()) {
-		return _fail(
-			ERR_INVALID_PARAMETER,
-			"SharedMemory.create(): name cannot be empty."
-		);
-	}
-
-	if (p_size <= 0) {
-		return _fail(
-			ERR_INVALID_PARAMETER,
-			"SharedMemory.create(): size must be greater than zero."
-		);
-	}
-
-	if (get_status() == STATUS_CREATED || get_status() == STATUS_OPEN) {
-		ERR_PRINT("SharedMemory.create(): already created or open.");
-		return ERR_ALREADY_IN_USE;
-	}
-
-	Error create_error = _create_os(p_name, p_size, p_scope);
-	
-	if (create_error != OK) {
-		return create_error;
-	}
-
-	name = p_name;
-	original_name = p_name;
-	size = p_size;
-
-	status = STATUS_CREATED;
-	return OK;
-}
-
-Error SharedMemory::open(const StringName& p_name, int64_t p_size) {
-	if (p_name.is_empty()) {
-		return _fail(
-			ERR_INVALID_PARAMETER,
-			"SharedMemory.open(): name cannot be empty."
-		);
-	}
-
-	if (p_size < 0) {
-		return _fail(
-			ERR_INVALID_PARAMETER,
-			"SharedMemory.open(): size must not be negative."
-		);
-	}
-
-	if (get_status() == STATUS_CREATED || get_status() == STATUS_OPEN) {
-		ERR_PRINT("SharedMemory.open(): already created or open.");
-		return ERR_ALREADY_IN_USE;
-	}
-
-	Error open_error = _open_os(p_name, p_size);
-
-	if (open_error != OK) {
-		return open_error;
-	}
-
-	name = p_name;
-	original_name = p_name;
-	size = p_size;
-
-	status = STATUS_OPEN;
-	return OK;
-}
-
-PackedByteArray SharedMemory::read(int64_t p_size, const int64_t p_offset) const {
-	PackedByteArray buffer = PackedByteArray();
-	
-	if (status != STATUS_CREATED && status != STATUS_OPEN) {
-		ERR_PRINT("SharedMemory.read(): invalid state.");
-		return buffer;
-	}
-	
-	if (!os_ptr) {
-		ERR_PRINT("SharedMemory.read(): invalid memory pointer.");
-		return buffer;
-	}
-
-	if (p_offset < 0) {
-		ERR_PRINT("SharedMemory.read(): offset must be greater than or equal to zero.");
-		return buffer;
-	}
-
-	if (p_offset >= size) {
-		ERR_PRINT("SharedMemory.read(): offset out of bounds.");
-		return buffer;
-	}
-
-	if (p_size == 0) {
-		p_size = size - p_offset;
-	}
-
-	if (p_size < 0) {
-		ERR_PRINT("SharedMemory.read(): size must be greater than or equal to zero.");
-		return buffer;
-	}
-
-	if (p_offset > size - p_size) {
-		ERR_PRINT("SharedMemory.read(): size out of bounds.");
-		return buffer;
-	}
-
-	buffer.resize(p_size);
-
-	memcpy(
-		buffer.ptrw(),
-		static_cast<const uint8_t*>(os_ptr) + p_offset,
-		p_size
-	);
-
-	return buffer;
-}
-
-Error SharedMemory::write(const PackedByteArray& p_data, const int64_t p_offset) {
-	if (status != STATUS_CREATED && status != STATUS_OPEN) {
-		ERR_PRINT("SharedMemory.write(): invalid state.");
-		return ERR_UNCONFIGURED;
-	}
-
-	if (!os_ptr) {
-		ERR_PRINT("SharedMemory.write(): invalid memory pointer.");
-		return ERR_INVALID_DATA;
-	}
-	
-	const int64_t data_size = p_data.size();
-
-	if (data_size <= 0) {
-		ERR_PRINT("SharedMemory.write(): data is empty.");
-		return ERR_INVALID_PARAMETER;
-	}
-
-	if (p_offset < 0) {
-		ERR_PRINT("SharedMemory.write(): offset must be greater than or equal to zero.");
-		return ERR_INVALID_PARAMETER;
-	}
-
-	if (data_size > size) {
-		ERR_PRINT("SharedMemory.write(): data exceeds shared memory size.");
-		return ERR_INVALID_PARAMETER;
-	}
-
-	if (p_offset > size - data_size) {
-		ERR_PRINT("SharedMemory.write(): read exceeds shared memory bounds.");
-		return ERR_INVALID_PARAMETER;
-	}
-
-	memcpy(
-		static_cast<uint8_t*>(os_ptr) + p_offset,
-		p_data.ptr(),
-		data_size
-	);
-
-	return OK;
-}
-
-void SharedMemory::close() {
-	if (status == STATUS_CREATED || status == STATUS_OPEN) {
-		_close_os();
-		status = STATUS_UNINITIALIZED;
-	}
-
-	name = StringName();
-	size = 0;
-	mapped_size = 0;
-
-}
-
-void SharedMemory::unlink() {
-	if (!original_name.is_empty()) {
-		_unlink_os();
-	}
-	original_name = StringName();
+Error SharedMemory::_fail(Error p_error, const String& p_message) {
+	status = STATUS_ERROR;
+	ERR_PRINT(p_message);
+	return p_error;
 }
